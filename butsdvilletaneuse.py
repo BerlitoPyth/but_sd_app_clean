@@ -96,7 +96,7 @@ def main():
         with col1:
             st.success("""
             ### ✨ Points Clés
-            - 📊 Goût pour les mathématiques et l'informatique depuis l'
+            - 📊 Goût pour les mathématiques et l'informatique depuis l'enfance
             - 🤝 Expérience du travail d'équipe en conditions exigeantes
             - 💡 Capacité d'adaptation prouvée
             - 🎯 Formation continue en programmation
