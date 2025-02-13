@@ -1,0 +1,26 @@
+/* Typographie et titres */
+h1 {
+    margin-top: 3rem !important;
+    scroll-margin-top: 80px;
+}
+
+h2 {
+    margin: 1rem 0 !important;
+    padding: 0 !important;
+}
+
+.custom-title {
+    margin-top: 3rem !important;
+    margin-bottom: 2rem;
+    padding-top: 2rem;
+    scroll-margin-top: 80px;
+}
+
+.warning-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}

@@ -1,15 +1,32 @@
 import streamlit as st
 import time
-from theme import toggle_theme
-from quiz import display_quiz  
-from presentation import display_presentation
-from floating_chat import add_floating_chat_to_app
 from PIL import Image
 import random
-from projet_gaming import display_project_concept
-from lettre_motivation_content import get_lettre_motivation_content, get_note_importante
+import sys
+from pathlib import Path
 
-# Remplacer la fonction scroll_to_section par :
+# Ajout du chemin absolu au PYTHONPATH
+file_path = Path(__file__).resolve()
+project_root = file_path.parent
+sys.path.append(str(project_root))
+
+# Import des composants après l'ajout du chemin
+try:
+
+    from components.theme import toggle_theme  # Import direct de la fonction
+    from components.quiz import display_quiz   # Import direct de la fonction
+    from components.presentation import display_presentation
+    from components.floating_chat import add_floating_chat_to_app
+    from components.projet_gaming import display_project_concept
+    from components.matrix_animation import display_matrix_animation
+    print("Imports des composants réussis")
+except ImportError as e:
+    print(f"Erreur d'import: {e}")
+    sys.exit(1)
+
+# Import du contenu
+from content.lettre_motivation_content import get_lettre_motivation_content, get_note_importante
+
 def scroll_to_section(title_id):
     js = f'''
     <script>
@@ -33,331 +50,32 @@ def write_text_slowly(text):
         time.sleep(0.03)
     placeholder.markdown(f"### {text}")
 
-def display_data_animation():
-    """Animation style Matrix en plein écran"""
-    loading_container = st.empty()
-    
-    # Style CSS Matrix modifié pour le plein écran
-    st.markdown("""
-        <style>
-        @keyframes matrix-rain {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        
-        @keyframes glow {
-            0% { text-shadow: 0 0 5px #0f0; }
-            50% { text-shadow: 0 0 20px #0f0, 0 0 30px #0f0; }
-            100% { text-shadow: 0 0 5px #0f0; }
-        }
-        
-        .matrix-animation {
-            font-family: 'Courier New', monospace;
-            background-color: rgba(0, 0, 0, 0.95);
-            color: #0f0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        
-        .binary-stream {
-            font-size: 16px;
-            letter-spacing: 4px;
-            animation: glow 2s infinite;
-            opacity: 0.8;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .message-text {
-            font-size: 24px;
-            margin: 20px 0;
-            color: #fff;
-            text-shadow: 0 0 10px #0f0;
-            animation: glow 1.5s infinite;
-            position: relative;
-            z-index: 2;
-        }
-        
-        .matrix-rain {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            opacity: 0.3;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .rain-column {
-            animation: matrix-rain 2s linear infinite;
-            animation-delay: var(--delay);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    # Animation Matrix avec colonnes de pluie
-    matrix_chars = "01"
-    rain_columns = 50  # Nombre de colonnes de pluie
-    
-    for i in range(50):
-        binary = ''.join(random.choice(matrix_chars) for _ in range(40))
-        rain_html = ''.join([
-            f'<div class="rain-column" style="--delay: {random.random() * 2}s">{binary}</div>'
-            for _ in range(rain_columns)
-        ])
-        
-        loading_container.markdown(f"""
-            <div class="matrix-animation">
-                <div class="matrix-rain">{rain_html}</div>
-                <div class="binary-stream">{binary[:int(i/50*len(binary))]}▌</div>
-                <div class="message-text">📊 Initialisation de la Matrice...</div>
-            </div>
-        """, unsafe_allow_html=True)
-        time.sleep(0.02)
-    
-    time.sleep(0.5)
-    
-    # Message final avec effet Matrix
-    loading_container.markdown(f"""
-        <div class="matrix-animation">
-            <div class="matrix-rain">{rain_html}</div>
-            <div class="binary-stream">{binary}</div>
-            <div class="message-text">🚀 Bienvenue dans la Matrice. Merci pour le temps que vous m'accordez.</div>
-        </div>
-    """, unsafe_allow_html=True)
-    time.sleep(1.5)
-    loading_container.empty()
+def load_css():
+    """Charge les fichiers CSS"""
+    css_files = ['main.css', 'layout.css', 'typography.css', 'components.css', 'sidebar.css']
+    for css_file in css_files:
+        css_path = Path(project_root) / "styles" / css_file
+        try:
+            css_content = css_path.read_text()
+            st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+        except Exception as e:
+            print(f"Erreur lors du chargement de {css_file}: {e}")
 
 def main():
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide"
     )
-
+    
+    # Charger le CSS
+    load_css()
+    
     # Ajouter l'animation au début
     if 'animation_shown' not in st.session_state:
-        display_data_animation()
+        display_matrix_animation()
         st.session_state.animation_shown = True
     
     # Afficher le toggle theme après l'animation ou directement si déjà montrée
-
-    # Style personnalisé
-    st.markdown("""
-        <style>
-        .main {
-            padding: 2rem;
-        }
-        .highlight {
-            background-color: #f0f2f6;
-            padding: 1rem;
-            border-radius: 0.5rem;
-        }
-        .stButton > button {
-            width: 100%;
-        }
-        .stImage {
-            transition: transform 0.3s ease;
-        }
-        .stImage:hover {
-            transform: scale(1.02);
-            cursor: pointer;
-        }
-        .thumbnail-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px;
-        }
-        .streamlit-title {
-            scroll-margin-top: 20px;
-        }
-        #section-title {
-            margin-top: 0;
-            padding-top: 2rem;
-        }
-        .section-title {
-            scroll-margin-top: 60px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .section-title.visible {
-            opacity: 1;
-        }
-        .warning-box {
-            background-color: #fee2e2;
-            border: 1px solid #ef4444;
-            border-radius: 8px;
-            padding: 16px;
-            margin: 20px 0;
-            color: #991b1b;
-        }
-        .warning-title {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .custom-title {
-            margin-top: 3rem !important;  /* Augmenté de 1rem à 3rem */
-            margin-bottom: 2rem;
-            padding-top: 2rem;
-            scroll-margin-top: 80px;  /* Augmenté de 60px à 80px */
-        }
-
-        /* Ajout d'un style pour tous les h1 */
-        h1 {
-            margin-top: 3rem !important;
-            scroll-margin-top: 80px;
-        }
-
-        /* Style pour les titres des sections */
-        .section-title {
-            margin-top: 3rem !important;
-            scroll-margin-top: 80px;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        /* Ajuster la marge du premier titre de la page d'accueil */
-        .main > div:first-child h1 {
-            margin-top: 2rem !important;
-        }
-
-        /* Ajuster l'espacement de la sidebar */
-        .st-emotion-cache-1cypcdb {
-            padding-top: 0 !important;
-        }
-
-        /* Réduire l'espace au-dessus du titre Navigation */
-        .sidebar .block-container {
-            padding-top: 0.5rem !important;
-        }
-
-        /* Ajuster l'espacement du titre Navigation */
-        .sidebar h1 {
-            margin-top: 0.5rem !important;
-            margin-bottom: 0.5rem !important;
-        }
-
-        /* Ajuster l'espacement des séparateurs dans la sidebar */
-        .sidebar hr {
-            margin: 0.5rem 0 !important;
-        }
-
-        /* Ajuster l'espacement des éléments de la sidebar */
-        .sidebar .element-container {
-            margin-bottom: 0.5rem !important;
-        }
-
-        /* Réduire l'espace au-dessus du menu de navigation */
-        .stRadio {
-            margin-top: 0 !important;
-        }
-
-        /* Ajuster l'espacement du titre Navigation */
-        .stHeading {
-            margin-top: -0.5rem !important;
-            margin-bottom: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* Style spécifique pour le titre Navigation */
-        .stHeading h1 {
-            font-size: 1.5em !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            line-height: 1.2 !important;
-        }
-
-        /* Ajuster l'espace entre le bouton de thème et la navigation */
-        div[data-testid="column"]:has(button:contains("Thème")) {
-            margin-bottom: -0.5rem !important;
-        }
-
-        /* Réduire l'espace du conteneur du titre */
-        .stElementContainer:has(.stHeading) {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* Supprimer les séparateurs superflus */
-        .stElementContainer:has(.stMarkdown hr) {
-            display: none !important;
-        }
-
-        /* Ajuster l'espacement entre les éléments */
-        .sidebar .element-container + .element-container {
-            margin-top: 0.5rem !important;
-        }
-
-        /* Ajuster l'espacement global de la sidebar */
-        .sidebar .block-container {
-            gap: 0.5rem !important;
-        }
-
-        /* Ajuster les marges des titres de section */
-        .main .block-container {
-            padding-top: 2rem !important;
-        }
-
-        /* Style pour tous les titres principaux */
-        .main h1 {
-            margin-top: 2rem !important;  /* Reduced from 3rem */
-            padding-top: 0.5rem !important;  /* Reduced from 1rem */
-            scroll-margin-top: 80px !important;  /* Reduced from 100px */
-        }
-
-        /* Style spécifique pour le premier titre de chaque section */
-        .main > div:first-child h1:first-of-type {
-            margin-top: 0.5rem !important;  /* Reduced from 1rem */
-        }
-
-        /* Ajuster l'espacement du conteneur principal */
-        .stApp {
-            margin-top: 0.5rem !important;  /* Reduced from 1rem */
-        }
-
-        /* Style pour le titre de la lettre de motivation */
-        h2 {
-            margin: 1rem 0 !important;  /* Reduced from 2rem */
-            padding: 0 !important;
-        }
-
-        /* Ajuster spécifiquement le conteneur de la lettre de motivation */
-        h2:contains("Ma Lettre de Motivation") {
-            margin: 1rem 0 !important;
-            line-height: 1.2 !important;
-            height: auto !important;
-        }
-
-        /* Ensure main title visibility */
-        .main .block-container {
-            padding-top: 1rem !important;
-        }
-
-        /* Style for the project's main title */
-        .main > div:first-child h1:first-of-type {
-            margin-top: 0 !important;
-            padding-top: 1rem !important;
-            margin-bottom: 2rem !important;
-            scroll-margin-top: 0 !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
 
     # Sidebar
     with st.sidebar:
@@ -552,7 +270,7 @@ def main():
 
     # Footer
     st.markdown("---")
-    st.markdown("*Application interactive créé pour accompagner ma candidature au BUT Science des Données*")
+    st.markdown("*Application interactive créée pour accompagner ma candidature au BUT Science des Données*")
 
 if __name__ == "__main__":
     main()

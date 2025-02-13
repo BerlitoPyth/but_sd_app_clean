@@ -1,0 +1,26 @@
+/* Layout et conteneurs */
+.block-container {
+    padding-top: 1rem !important;
+}
+
+.main > div:first-child h1:first-of-type {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+    margin-bottom: 2rem !important;
+    scroll-margin-top: 0 !important;
+}
+
+.highlight {
+    background-color: #f0f2f6;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+.warning-box {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 20px 0;
+    color: #991b1b;
+}

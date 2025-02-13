@@ -1,4 +1,7 @@
 import streamlit as st
+
+__all__ = ['toggle_theme']
+
 def toggle_theme():
     """
     Bascule entre le mode jour et nuit dans une application Streamlit.
@@ -277,3 +280,30 @@ def toggle_theme():
     
     # Application du CSS
     st.markdown(css, unsafe_allow_html=True)
+
+def demo_theme():
+    """Démo du composant theme"""
+    st.set_page_config(page_title="Démo Theme", layout="wide")
+    st.title("Démonstration du composant Theme")
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        toggle_theme()
+        
+        st.markdown("### Exemple de contenu")
+        st.write("Ce texte changera de couleur avec le thème")
+        
+        st.info("Info box pour tester le thème")
+        st.success("Success box pour tester le thème")
+        
+        st.markdown("""
+        ## Éléments de test
+        * Liste à puces
+        * Pour voir le thème
+        * En action
+        """)
+        
+        st.button("Un bouton de test")
+
+if __name__ == "__main__":
+    demo_theme()

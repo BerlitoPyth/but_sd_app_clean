@@ -1,5 +1,14 @@
 import streamlit as st
 import streamlit.components.v1 as components
+import sys
+from pathlib import Path
+
+# Ajout du chemin absolu au PYTHONPATH
+file_path = Path(__file__).resolve()
+project_root = file_path.parent.parent  # Remonte d'un niveau pour atteindre la racine du projet
+sys.path.append(str(project_root))
+
+__all__ = ['display_quiz']  # Export explicite de la fonction
 
 def display_quiz():
     quiz_html = """

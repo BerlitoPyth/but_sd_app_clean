@@ -1,0 +1,29 @@
+/* Composants UI */
+.stButton > button {
+    width: 100%;
+}
+
+.stImage {
+    transition: transform 0.3s ease;
+}
+
+.stImage:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+.thumbnail-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.section-title {
+    scroll-margin-top: 60px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.section-title.visible {
+    opacity: 1;
+}

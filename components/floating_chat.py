@@ -4,35 +4,29 @@ from openai import OpenAI
 def init_chat_client():
     """Initialize OpenAI client with API key"""
     try:
-        # Debug prints for secrets
         print("Checking for secrets...")
         
-        # Check if we're running on Streamlit Cloud
         if hasattr(st.secrets, "OPENAI_API_KEY"):
-            api_key = st.secrets.OPENAI_API_KEY
-            print("API Key found in Streamlit secrets")
-        else:
-            st.error("Clé API OpenAI manquante dans les secrets Streamlit")
-            return None
-        
-        client = OpenAI(api_key=api_key)
-        print("OpenAI client initialized successfully")
-        
-        # Test API connection
-        test_response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": "Test"}],
-            max_tokens=5
-        )
-        print("API connection test successful")
-        
-        return client
-        
+            api_key = st.secrets["OPENAI_API_KEY"]
+            print("API Key found:", api_key[:5] + "..." + api_key[-4:])  # Affiche juste le début et la fin de la clé
+            
+            if not api_key.startswith("sk-"):
+                st.error("Format de clé API invalide. La clé doit commencer par 'sk-'")
+                return None
+                
+            client = OpenAI(api_key=api_key)
+            
+            # Test API connection with minimal tokens
+            test_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": "Test"}],
+                max_tokens=1
+            )
+            print("API connection test successful")
+            return client
+            
     except Exception as e:
-        import traceback
-        print(f"Error initializing OpenAI client: {str(e)}")
-        print(f"Full traceback:\n{traceback.format_exc()}")
-        st.error(f"Error initializing OpenAI client: {str(e)}")
+        st.error(f"Erreur d'initialisation OpenAI: {str(e)}")
         return None
 
 def create_chat_interface():
