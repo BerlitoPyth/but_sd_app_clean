@@ -7,11 +7,12 @@ from pathlib import Path
 def load_parcoursup_data():
     """Charger les données Parcoursup"""
     try:
-        # Utiliser le chemin absolu
+        # Utiliser le chemin absolu et le séparateur point-virgule
         data_path = Path(__file__).parent.parent / ".data" / "parcoursup_2024.csv"
-        df = pd.read_csv(data_path, encoding='utf-8')
-        print(df.head())
-        print(df.columns)
+        df = pd.read_csv(data_path, encoding='utf-8', sep=';')
+        print("Données chargées avec succès")
+        print("Colonnes:", df.columns.tolist())
+        print("Aperçu des données:\n", df.head())
         return df
     except Exception as e:
         st.error(f"Erreur lors du chargement des données: {str(e)}")
