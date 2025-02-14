@@ -1,16 +1,19 @@
 import streamlit as st
 from PIL import Image
 
-def display_project_concept():
-    # Main title with custom styling
-    st.markdown("""
-        <h1 style="
-            margin-top: 0 !important;
-            padding-top: 1rem !important;
-            margin-bottom: 2rem !important;
-            scroll-margin-top: 0 !important;
-        ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
-    """, unsafe_allow_html=True)
+def display_project_concept(show_title=True):
+    """
+    Affiche le concept du projet
+    :param show_title: Boolean pour contrôler l'affichage du titre
+    """
+    if show_title:
+        st.markdown("""
+            <h1 style="
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                margin-bottom: 1.5rem !important;
+            ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
+        """, unsafe_allow_html=True)
     
     # Add a separator after the main title
     st.markdown("---")
@@ -63,7 +66,7 @@ def display_project_concept():
     
     st.markdown("""
     <div style='background-color: rgba(70, 150, 236, 0.1); padding: 20px; border-radius: 10px; border-left: 5px solid #4696EC; margin: 20px 0;'>
-        <h3 style='color: #4696EC; margin: 0;'>Notre Mission 🚀</h3>
+        <h3 style='color: #4696EC; margin: 0;'>Ma Mission 🚀</h3>
         <p style='font-size: 18px; margin: 10px 0;'>
             "Permettre à chacun d'accéder au gaming PC en toute confiance, 
             sans compromis sur la qualité et avec la garantie du meilleur rapport qualité/prix"

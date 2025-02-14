@@ -1,7 +1,20 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-def display_presentation():
+def display_presentation(show_title=True):
+    """
+    Affiche la présentation
+    :param show_title: Boolean pour contrôler l'affichage du titre
+    """
+    if show_title:
+        st.markdown("""
+            <h1 style="
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                margin-bottom: 1.5rem !important;
+            ">Qui suis-je ?</h1>
+        """, unsafe_allow_html=True)
+    
     presentation_html = """
     <!DOCTYPE html>
     <html>
@@ -21,21 +34,20 @@ def display_presentation():
 
             .profile-container {
                 max-width: 1000px;
-                margin: 0 auto;
+                margin: 0;
+                padding: 0;
             }
 
             .profile-header {
-                text-align: center;
-                margin-bottom: 2rem;
-                padding: 1rem;
-                border-radius: 12px;
-                background: linear-gradient(180deg, rgba(30, 41, 59, 0.5) 0%, rgba(30, 41, 59, 0) 100%);
+                display: none;
             }
 
             .section-grid {
                 display: grid;
                 grid-template-columns: repeat(2, 1fr);
                 gap: 2rem;
+                margin-top: 0;
+                padding-top: 0;
             }
 
             @media (max-width: 1200px) {
@@ -231,11 +243,6 @@ def display_presentation():
 
             const Profile = () => (
                 <div className="profile-container">
-                    <div className="profile-header animate-slide">
-                        <h2 style={{ fontSize: '2rem', margin: '0', background: 'linear-gradient(135deg, #60A5FA, #818CF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                            Qui suis-je ?
-                        </h2>
-                    </div>
                     <div className="section-grid">
                         {sections.map((section, index) => (
                             <Section 

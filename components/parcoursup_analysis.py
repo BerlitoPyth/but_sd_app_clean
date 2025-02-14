@@ -71,9 +71,20 @@ def load_parcoursup_data():
         print("Erreur détaillée:", e)
         return None
 
-def display_parcoursup_analysis():
-    """Afficher l'analyse des données Parcoursup BUT SD"""
-    st.title("📊 Analyse des données Parcoursup 2024 - BUT Science des données")
+def display_parcoursup_analysis(show_title=True):
+    """
+    Affiche l'analyse des données Parcoursup
+    :param show_title: Boolean pour contrôler l'affichage du titre
+    """
+    # Ne pas afficher le titre si show_title est False
+    if show_title:
+        st.markdown("""
+            <h1 style="
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                margin-bottom: 1.5rem !important;
+            ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
+        """, unsafe_allow_html=True)
     
     # Chargement des données
     df = load_parcoursup_data()

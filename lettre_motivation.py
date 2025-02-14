@@ -19,6 +19,7 @@ try:
     from components.floating_chat import add_floating_chat_to_app
     from components.projet_gaming import display_project_concept
     from components.matrix_animation import display_matrix_animation
+    from components.intro_tree import display_intro_tree
     try:
         from components.parcoursup_analysis import display_parcoursup_analysis
     except ImportError:
@@ -31,6 +32,13 @@ except ImportError as e:
 
 # Import du contenu
 from content.lettre_motivation_content import get_lettre_motivation_content, get_note_importante
+
+# Au début du fichier, après les imports
+if 'animation_shown' not in st.session_state:
+    st.session_state.animation_shown = False
+
+if 'intro_shown' not in st.session_state:
+    st.session_state.intro_shown = False
 
 def scroll_to_section(title_id):
     js = f'''
@@ -73,53 +81,27 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Ajout du style pour les proportions sidebar/main
-    st.markdown("""
-        <style>
-        /* Ajustement des largeurs sidebar/main */
-        [data-testid="stSidebar"] {
-            width: 25% !important;
-        }
-        
-        .main .block-container {
-            max-width: 75% !important;
-            padding-left: 5% !important;
-            padding-right: 5% !important;
-            margin-left: 25% !important;
-        }
-        
-        @media (max-width: 768px) {
-            [data-testid="stSidebar"] {
-                width: 100% !important;
-            }
-            .main .block-container {
-                max-width: 100% !important;
-                margin-left: 0 !important;
-            }
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Charger le CSS
     load_css()
     
-    # Ajouter l'animation au début
-    if 'animation_shown' not in st.session_state:
+    # Nouvelle logique de séquence
+    if not st.session_state.get('intro_shown'):
+        display_intro_tree()
+        return
+        
+    if not st.session_state.get('animation_shown'):
         display_matrix_animation()
         st.session_state.animation_shown = True
-    
-    # Afficher le toggle theme après l'animation ou directement si déjà montrée
+        st.rerun()
+        return
 
-    # Sidebar
+    # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
-        # Bouton de thème compact en haut de la sidebar
         col1, col2 = st.columns([4, 1])
         with col2:
             toggle_theme()
         
         st.title("🎯 Navigation")
-        st.markdown("---")
-
+        
         # Menu de navigation
         selection = st.radio(
             "",
@@ -130,7 +112,8 @@ def main():
              "📊 Data Parcoursup"]
         )
         st.session_state.selection = selection
-        # Lettre de recommandation
+        
+        # Lettre de recommandation directement après le menu
         st.markdown("### 📄 Lettre de recommandation")
         try:
             if "lettre_agrandie" not in st.session_state:
@@ -144,16 +127,15 @@ def main():
             print(f"Erreur lors du chargement de la lettre: {str(e)}")
             st.error("Lettre de recommandation non disponible")
 
-        st.markdown("---")
-        st.markdown("### 👤 À propos")
+        # Disclaimer après la lettre
         st.info("""
-        🎓 DAEU B en cours
-        🤿 Ex-Plongeur Scaphandrier
-        💻 Passionné de programmation
-        🔢 Amateur de mathématiques
-        """)
-
-        st.markdown("---")
+        ⚠️ **Disclaimer:**
+        Cette application a été entièrement conçue et développée par mes soins. 
+        Aucun template n'a été utilisé.
+        
+        Les idées, le design et le code sont originaux, réalisés avec l'assistance d'outils d'IA comme GitHub Copilot et Claude.""")
+        
+        # Formations en dernier
         st.success("""
         ### 📚 Formations
         - DAEU B (en cours)
@@ -184,26 +166,25 @@ def main():
 
     # Contenu principal basé sur la sélection
     if selection == "🏠 Accueil":
-        # Conteneur principal avec titre et photo
+        # Création d'un container pour le titre et la photo
         col1, col2 = st.columns([3, 1])
-        
         with col1:
             st.markdown("""
-                <div style="margin-bottom: 1rem;">
+                <div style="margin: 0;">
                     <h1 style="
-                        font-size: 2em;
-                        margin-bottom: 0.5rem;
+                        font-size: 2.5em;
+                        margin: 0 0 0.5rem 0;
                         color: inherit;
                     ">Candidature BUT Science des Données</h1>
                     <h2 style="
                         font-size: 1.5em;
-                        margin-bottom: 1rem;
+                        margin: 0 0 1rem 0;
                         color: inherit;
                     ">Adrien BERLIAT</h2>
                 </div>
             """, unsafe_allow_html=True)
             
-            # Effet machine à écrire pour la citation
+            # Effet machine à écrire
             if 'title_written' not in st.session_state:
                 write_text_slowly("De la profondeur des océans à la profondeur des données... 🌊➡️📊")
                 st.session_state.title_written = True
@@ -216,7 +197,7 @@ def main():
                         margin: 0 0 2rem 0;
                     ">De la profondeur des océans à la profondeur des données... 🌊➡️📊</h3>
                 """, unsafe_allow_html=True)
-        
+
         with col2:
             try:
                 image = Image.open(".assets/photo.jpg")
@@ -228,7 +209,7 @@ def main():
         
         st.markdown("---")
         
-        # Ajouter le chat ici, après le titre et la photo
+        # Reste du contenu
         add_floating_chat_to_app()
         
         # Points clés
@@ -270,29 +251,48 @@ def main():
         st.markdown(get_note_importante(), unsafe_allow_html=True)
 
     elif selection == "👤 Présentation":
-        display_presentation()
+        st.markdown("""
+            <h1 style="
+                font-size: 2.5em;
+                margin: 0;
+                padding: 0;
+                color: inherit;
+            ">Qui suis-je ?</h1>
+        """, unsafe_allow_html=True)
+        display_presentation(show_title=False)  # Nouveau paramètre pour éviter le doublon
 
         st.markdown("---")
         
     elif selection == "🔧 Projet":
-        display_project_concept()
+        st.markdown("""
+            <h1 style="
+                font-size: 2.5em;
+                margin: 0 0 1.5rem 0;
+                color: inherit;
+            ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
+        """, unsafe_allow_html=True)
+        display_project_concept(show_title=False)  # Nouveau paramètre pour éviter le doublon
         
     elif selection == "✨ Quiz":
-        title_html = """
-            <div style="
-                margin-top: 20px;
-                margin-bottom: 30px;
-                scroll-margin-top: 60px;
-            ">
-                <h1 id="quiz-title">Découvrez si nous matchons ! ❤️</h1>
-            </div>
-        """
-        st.markdown(title_html, unsafe_allow_html=True)
-        scroll_to_section("quiz-title")
+        st.markdown("""
+            <h1 style="
+                font-size: 2.5em;
+                margin: 0 0 1.5rem 0;
+                color: inherit;
+            ">Découvrez si nous matchons ! ❤️</h1>
+        """, unsafe_allow_html=True)
         display_quiz()
         
     elif selection == "📊 Data Parcoursup":
-        display_parcoursup_analysis()
+        st.markdown("""
+            <h1 style="
+                font-size: 2.5em;
+                margin: 0;
+                padding: 0;
+                color: inherit;
+            ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
+        """, unsafe_allow_html=True)
+        display_parcoursup_analysis(show_title=False)  # Ajout du paramètre pour éviter le doublon
     
     # Footer
     st.markdown("---")
