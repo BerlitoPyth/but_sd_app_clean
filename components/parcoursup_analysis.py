@@ -8,21 +8,16 @@ def load_parcoursup_data():
     """Charger les données Parcoursup"""
     try:
         data_path = Path(__file__).parent.parent / ".data" / "parcoursup_2024.csv"
+        # Utiliser sep=';' pour le point-virgule comme séparateur
         df = pd.read_csv(data_path, encoding='utf-8', sep=';')
         
-        # Renommer les colonnes pour plus de clarté
-        df = df.rename(columns={
-            'Filière de formation': 'formation',
-            'Etablissement': 'etablissement',
-            'Région de l\'établissement': 'region',
-            'Capacité de l\'établissement par formation': 'capacite',
-            'Effectif total des candidats pour une formation': 'nb_candidatures',
-            'Effectif total des candidats ayant accepté la proposition de l\'établissement (admis)': 'admis',
-            'Taux d\'accès': 'taux_admission'
-        })
+        # Nettoyage et conversion des colonnes numériques
+        df['Taux d\'accès'] = pd.to_numeric(df['Taux d\'accès'].str.replace(',', '.'), errors='coerce')
         
-        # Créer une colonne type_formation en extrayant le type depuis la formation
-        df['type_formation'] = df['formation'].apply(lambda x: x.split(' - ')[0] if ' - ' in x else x.split(' ')[0])
+        # Créer une colonne type_formation simplifiée
+        df['type_formation'] = df['Filière de formation'].apply(
+            lambda x: x.split(' ')[0] if ' ' in x else x
+        )
         
         print("Colonnes disponibles:", df.columns.tolist())
         return df
@@ -61,13 +56,13 @@ def display_parcoursup_analysis():
     with col1:
         st.metric(
             "Nombre total de candidatures",
-            f"{df_filtered['nb_candidatures'].sum():,}"
+            f"{df_filtered['Effectif total des candidats pour une formation'].sum():,}"
         )
     
     with col2:
-        taux_moyen = df_filtered['taux_admission'].mean()
+        taux_moyen = df_filtered['Taux d\'accès'].mean()
         st.metric(
-            "Taux d'admission moyen",
+            "Taux d'accès moyen",
             f"{taux_moyen:.1f}%"
         )
     
@@ -82,35 +77,37 @@ def display_parcoursup_analysis():
     
     # Graphique 1: Distribution des candidatures par type de formation
     fig1 = px.bar(
-        df_filtered.groupby('type_formation')['nb_candidatures'].sum().reset_index(),
+        df_filtered.groupby('type_formation')['Effectif total des candidats pour une formation'].sum().reset_index(),
         x='type_formation',
-        y='nb_candidatures',
+        y='Effectif total des candidats pour une formation',
         title='Distribution des candidatures par type de formation',
-        labels={'type_formation': 'Type de formation', 'nb_candidatures': 'Nombre de candidatures'}
+        labels={
+            'type_formation': 'Type de formation', 
+            'Effectif total des candidats pour une formation': 'Nombre de candidatures'
+        }
     )
     st.plotly_chart(fig1, use_container_width=True)
     
-    # Graphique 2: Taux d'admission par région
+    # Graphique 2: Taux d'accès par région
     fig2 = px.box(
         df_filtered,
-        x='region',
-        y='taux_admission',
-        title='Taux d\'admission par région',
-        labels={'region': 'Région', 'taux_admission': 'Taux d\'admission (%)'}
+        x='Région de l\'établissement',
+        y='Taux d\'accès',
+        title='Taux d\'accès par région',
+        labels={
+            'Région de l\'établissement': 'Région', 
+            'Taux d\'accès': 'Taux d\'accès (%)'
+        }
     )
     fig2.update_layout(xaxis_tickangle=45)
     st.plotly_chart(fig2, use_container_width=True)
     
     # Top 10 des formations les plus demandées
     st.header("🏆 Top 10 des formations les plus demandées")
-    top_10 = df_filtered.nlargest(10, 'nb_candidatures')[['formation', 'etablissement', 'nb_candidatures', 'taux_admission']]
+    top_10 = df_filtered.nlargest(10, 'Effectif total des candidats pour une formation')[[
+        'Filière de formation',
+        'Établissement',
+        'Effectif total des candidats pour une formation',
+        'Taux d\'accès'
+    ]]
     st.dataframe(top_10)
-    
-    # Analyse prédictive
-    st.header("🔮 Analyse prédictive")
-    st.write("""
-    Basé sur les données historiques, nous pouvons estimer les tendances 
-    pour les admissions en BUT Science des Données...
-    """)
-    
-    # Ajouter d'autres visualisations et analyses selon vos besoins
