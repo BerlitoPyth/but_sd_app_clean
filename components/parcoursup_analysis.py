@@ -7,12 +7,24 @@ from pathlib import Path
 def load_parcoursup_data():
     """Charger les données Parcoursup"""
     try:
-        # Utiliser le chemin absolu et le séparateur point-virgule
         data_path = Path(__file__).parent.parent / ".data" / "parcoursup_2024.csv"
         df = pd.read_csv(data_path, encoding='utf-8', sep=';')
-        print("Données chargées avec succès")
-        print("Colonnes:", df.columns.tolist())
-        print("Aperçu des données:\n", df.head())
+        
+        # Renommer les colonnes pour plus de clarté
+        df = df.rename(columns={
+            'Filière de formation': 'formation',
+            'Etablissement': 'etablissement',
+            'Région de l\'établissement': 'region',
+            'Capacité de l\'établissement par formation': 'capacite',
+            'Effectif total des candidats pour une formation': 'nb_candidatures',
+            'Effectif total des candidats ayant accepté la proposition de l\'établissement (admis)': 'admis',
+            'Taux d\'accès': 'taux_admission'
+        })
+        
+        # Créer une colonne type_formation en extrayant le type depuis la formation
+        df['type_formation'] = df['formation'].apply(lambda x: x.split(' - ')[0] if ' - ' in x else x.split(' ')[0])
+        
+        print("Colonnes disponibles:", df.columns.tolist())
         return df
     except Exception as e:
         st.error(f"Erreur lors du chargement des données: {str(e)}")
@@ -29,12 +41,18 @@ def display_parcoursup_analysis():
     if df is None:
         return
     
-    # Filtres et sélections
+    # Filtres
     st.sidebar.markdown("### 🔍 Filtres")
     formation_type = st.sidebar.multiselect(
         "Type de formation",
-        df['type_formation'].unique()
+        sorted(df['type_formation'].unique())
     )
+    
+    # Filtrer les données si des types de formation sont sélectionnés
+    if formation_type:
+        df_filtered = df[df['type_formation'].isin(formation_type)]
+    else:
+        df_filtered = df
     
     # Statistiques générales
     st.header("📈 Statistiques générales")
@@ -43,27 +61,28 @@ def display_parcoursup_analysis():
     with col1:
         st.metric(
             "Nombre total de candidatures",
-            df['nb_candidatures'].sum()
+            f"{df_filtered['nb_candidatures'].sum():,}"
         )
     
     with col2:
+        taux_moyen = df_filtered['taux_admission'].mean()
         st.metric(
             "Taux d'admission moyen",
-            f"{(df['taux_admission'].mean()):.2f}%"
+            f"{taux_moyen:.1f}%"
         )
     
     with col3:
         st.metric(
             "Nombre de formations",
-            len(df)
+            len(df_filtered)
         )
     
     # Visualisations
     st.header("📊 Visualisations")
     
     # Graphique 1: Distribution des candidatures par type de formation
-    fig1 = px.histogram(
-        df,
+    fig1 = px.bar(
+        df_filtered.groupby('type_formation')['nb_candidatures'].sum().reset_index(),
         x='type_formation',
         y='nb_candidatures',
         title='Distribution des candidatures par type de formation',
@@ -73,13 +92,19 @@ def display_parcoursup_analysis():
     
     # Graphique 2: Taux d'admission par région
     fig2 = px.box(
-        df,
+        df_filtered,
         x='region',
         y='taux_admission',
         title='Taux d\'admission par région',
         labels={'region': 'Région', 'taux_admission': 'Taux d\'admission (%)'}
     )
+    fig2.update_layout(xaxis_tickangle=45)
     st.plotly_chart(fig2, use_container_width=True)
+    
+    # Top 10 des formations les plus demandées
+    st.header("🏆 Top 10 des formations les plus demandées")
+    top_10 = df_filtered.nlargest(10, 'nb_candidatures')[['formation', 'etablissement', 'nb_candidatures', 'taux_admission']]
+    st.dataframe(top_10)
     
     # Analyse prédictive
     st.header("🔮 Analyse prédictive")
