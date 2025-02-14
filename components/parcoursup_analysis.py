@@ -2,15 +2,21 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from pathlib import Path
 
 def load_parcoursup_data():
     """Charger les données Parcoursup"""
     try:
-        # Remplacer par le chemin de votre fichier de données
-        df = pd.read_csv(".data/parcoursup_2024.csv")
+        # Utiliser le chemin absolu
+        data_path = Path(__file__).parent.parent / ".data" / "parcoursup_2024.csv"
+        df = pd.read_csv(data_path, encoding='utf-8')
+        print(df.head())
+        print(df.columns)
         return df
     except Exception as e:
         st.error(f"Erreur lors du chargement des données: {str(e)}")
+        print(f"Chemin tenté : {data_path}")
+        print(f"Erreur complète : {str(e)}")
         return None
 
 def display_parcoursup_analysis():
