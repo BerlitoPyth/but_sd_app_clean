@@ -19,6 +19,11 @@ try:
     from components.floating_chat import add_floating_chat_to_app
     from components.projet_gaming import display_project_concept
     from components.matrix_animation import display_matrix_animation
+    try:
+        from components.parcoursup_analysis import display_parcoursup_analysis
+    except ImportError:
+        def display_parcoursup_analysis():
+            st.error("Module d'analyse Parcoursup non disponible")
     print("Imports des composants réussis")
 except ImportError as e:
     print(f"Erreur d'import: {e}")
@@ -64,8 +69,36 @@ def load_css():
 def main():
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
-        layout="wide"
+        layout="wide",
+        initial_sidebar_state="expanded"
     )
+    
+    # Ajout du style pour les proportions sidebar/main
+    st.markdown("""
+        <style>
+        /* Ajustement des largeurs sidebar/main */
+        [data-testid="stSidebar"] {
+            width: 25% !important;
+        }
+        
+        .main .block-container {
+            max-width: 75% !important;
+            padding-left: 5% !important;
+            padding-right: 5% !important;
+            margin-left: 25% !important;
+        }
+        
+        @media (max-width: 768px) {
+            [data-testid="stSidebar"] {
+                width: 100% !important;
+            }
+            .main .block-container {
+                max-width: 100% !important;
+                margin-left: 0 !important;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
     # Charger le CSS
     load_css()
@@ -94,8 +127,7 @@ def main():
              "✨ Quiz",
              "🔧 Projet",
              "👤 Présentation",
-             "📈 Parcours",
-             "✉️ Motivation"]
+             "📊 Data Parcoursup"]
         )
         st.session_state.selection = selection
         # Lettre de recommandation
@@ -204,7 +236,7 @@ def main():
         with col1:
             st.success("""
             ### ✨ Points Clés
-            - 📊 Goût pour les mathématiques et l'informatique
+            - 📊 Goût pour les mathématiques
             - 🤝 Expérience du travail d'équipe
             - 💡 Autodidacte
             - 🚀 Motivation à toute épreuve
@@ -259,15 +291,9 @@ def main():
         scroll_to_section("quiz-title")
         display_quiz()
         
-    elif selection == "📈 Parcours":
-        st.markdown('<h1 id="parcours-title" class="custom-title">Mon Parcours</h1>', unsafe_allow_html=True)
-        scroll_to_section("parcours-title")
-
-
-    elif selection == "✉️ Motivation":
-        st.markdown('<h1 id="motivation-title" class="custom-title">Ma Motivation</h1>', unsafe_allow_html=True)
-        scroll_to_section("motivation-title")
-
+    elif selection == "📊 Data Parcoursup":
+        display_parcoursup_analysis()
+    
     # Footer
     st.markdown("---")
     st.markdown("*Application interactive créée pour accompagner ma candidature au BUT Science des Données*")

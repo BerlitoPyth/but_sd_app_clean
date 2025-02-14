@@ -1,3 +1,8 @@
 streamlit
+pillow
 openai
 python-dotenv
+pandas
+plotly
+numpy
+scikit-learn
