@@ -143,9 +143,16 @@ def display_summary_stats(data):
         """, unsafe_allow_html=True)
 
 def display_prediction_interface(data, show_title=True):
-    # Ajouter une gestion d'état pour éviter les recharges infinies
+    """Interface de prédiction"""
     if 'prediction_state' not in st.session_state:
         st.session_state.prediction_state = {}
+        
+    # Empêcher les reruns infinis
+    if 'is_loading' not in st.session_state:
+        st.session_state.is_loading = False
+
+    if st.session_state.is_loading:
+        return
 
     if show_title:
         st.markdown("""

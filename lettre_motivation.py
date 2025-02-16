@@ -22,15 +22,13 @@ DATA_PATH.mkdir(exist_ok=True)
 
 # Import des composants après l'ajout du chemin
 try:
-
     from components.theme import toggle_theme  # Import direct de la fonction
     from components.quiz import display_quiz   # Import direct de la fonction
     from components.presentation import display_presentation
     from components.floating_chat import add_floating_chat_to_app
     from components.projet_gaming import display_project_concept
     from components.matrix_animation import display_matrix_animation
-    from components.intro_tree import display_intro_tree
-    from components.admission_prediction import display_prediction_interface
+    from components.admission_prediction import display_prediction_interface  # Un seul composant Parcoursup
     print("Imports des composants réussis")
 except ImportError as e:
     print(f"Erreur d'import: {e}")
