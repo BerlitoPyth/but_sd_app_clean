@@ -141,7 +141,6 @@ def display_summary_stats(data):
 
 def display_prediction_interface(data, show_title=True):
     """Interface de prédiction des chances d'admission"""
-    # Déplacer la gestion des onglets au niveau supérieur
     if show_title:
         st.markdown("""
             <h1 style="
@@ -155,14 +154,10 @@ def display_prediction_interface(data, show_title=True):
     # Affichage des statistiques globales
     display_summary_stats(data)
     
-    # Utiliser des noms uniques pour les onglets
-    current_tab = st.radio(
-        "Choisissez une vue",
-        ["🎯 Prédiction détaillée", "🌍 Comparaison globale"],
-        key="prediction_tabs"
-    )
+    # Ajout des onglets
+    tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
     
-    if current_tab == "🎯 Prédiction détaillée":
+    with tab1:
         st.markdown("### 🎯 Prédiction des chances d'admission")
         
         # Sélection établissement et profil
@@ -234,7 +229,7 @@ def display_prediction_interface(data, show_title=True):
             - Mettez en avant vos points forts
             """)
 
-    else:
+    with tab2:
         display_global_interface(data)
 
     return iut_choice, probability
