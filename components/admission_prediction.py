@@ -140,7 +140,10 @@ def display_summary_stats(data):
         """, unsafe_allow_html=True)
 
 def display_prediction_interface(data, show_title=True):
-    """Interface de prédiction des chances d'admission"""
+    # Ajouter une gestion d'état pour éviter les recharges infinies
+    if 'prediction_state' not in st.session_state:
+        st.session_state.prediction_state = {}
+
     if show_title:
         st.markdown("""
             <h1 style="
