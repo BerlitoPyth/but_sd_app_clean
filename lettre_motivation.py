@@ -79,20 +79,21 @@ def get_image_base64(image_path):
         return base64.b64encode(image_file.read()).decode()
 
 def main():
-    # Déplacer la configuration de la page ici, tout en haut
+    # Configuration de la page - ajout de menu=None
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="expanded",
+        menu_items=None  # Désactive le menu hamburger qui peut causer des problèmes
     )
     
     load_css()
     
-    # Nouvelle logique de séquence - Suppression de l'intro tree
+    # Modifier la gestion de l'animation pour éviter les rerun infinis
     if not st.session_state.get('animation_shown'):
         display_matrix_animation()
         st.session_state.animation_shown = True
-        st.rerun()
+        # Remplacer st.rerun() par return
         return
 
     # Le reste du code principal (sidebar, contenu, etc.)
