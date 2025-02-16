@@ -12,6 +12,14 @@ file_path = Path(__file__).resolve()
 project_root = file_path.parent
 sys.path.append(str(project_root))
 
+# Modification des chemins pour les assets et data
+ASSETS_PATH = project_root / ".assets"
+DATA_PATH = project_root / ".data"
+
+# S'assurer que les dossiers existent
+ASSETS_PATH.mkdir(exist_ok=True)
+DATA_PATH.mkdir(exist_ok=True)
+
 # Import des composants après l'ajout du chemin
 try:
 
@@ -73,10 +81,15 @@ def load_css():
             print(f"Erreur lors du chargement de {css_file}: {e}")
 
 def get_image_base64(image_path):
-    """Convert image to base64 string"""
+    """Convert image to base64 string with path handling"""
     import base64
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode()
+    try:
+        image_full_path = ASSETS_PATH / Path(image_path).name
+        with open(image_full_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode()
+    except Exception as e:
+        print(f"Erreur de chargement image: {e}")
+        return ""
 
 def main():
     # Configuration de la page en premier
@@ -315,7 +328,7 @@ def main():
         """, unsafe_allow_html=True)
         
         # Chargement des données Parcoursup
-        data_path = Path(project_root) / ".data" / "parcoursup.json"
+        data_path = DATA_PATH / "parcoursup.json"
         with open(data_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
             df = pd.DataFrame(data['results'])

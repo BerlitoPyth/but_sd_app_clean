@@ -3,15 +3,18 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import json
+from pathlib import Path
 
 def load_data():
-    """Charge les données depuis le fichier JSON"""
+    """Charge les données depuis le fichier JSON avec gestion des chemins"""
     try:
-        with open('data/parcoursup.json', 'r', encoding='utf-8') as file:
+        data_path = Path(__file__).resolve().parent.parent / ".data" / "parcoursup.json"
+        with open(data_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
             return pd.DataFrame(data['results'])
     except Exception as e:
         st.error(f"Erreur lors du chargement des données: {e}")
+        print(f"Chemin tenté: {data_path}")
         return None
 
 def calculate_admission_probability(iut_data, profile):
