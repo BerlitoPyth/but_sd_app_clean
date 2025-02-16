@@ -90,24 +90,32 @@ def get_image_base64(image_path):
         return ""
 
 def main():
-    # Configuration de la page en premier
+    # Configuration de base
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide",
-        initial_sidebar_state="expanded",
-        menu_items={} # Pour éviter le menu qui cause des problèmes
+        initial_sidebar_state="expanded"
     )
     
+    # Chargement CSS avant tout
     load_css()
     
-    # Gestion des états sans rerun
-    if not st.session_state.get('animation_shown'):
+    # Gestion de l'animation (simplifiée)
+    if not st.session_state.get('init_done'):
         display_matrix_animation()
-        st.session_state.animation_shown = True
-        with st.spinner('Chargement...'):
-            time.sleep(2)
-            st.rerun()  # Changé de st.experimental_rerun() à st.rerun()
+        st.session_state.init_done = True
+        st.rerun()
         return
+
+    try:
+        # Chargement des données Parcoursup une seule fois
+        if 'parcoursup_data' not in st.session_state:
+            with open(DATA_PATH / "parcoursup.json", 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                st.session_state.parcoursup_data = pd.DataFrame(data['results'])
+    except Exception as e:
+        print(f"Erreur chargement données: {e}")
+        st.error("Erreur lors du chargement des données")
 
     # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
@@ -325,14 +333,11 @@ def main():
             ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
         """, unsafe_allow_html=True)
         
-        # Chargement des données Parcoursup
-        data_path = DATA_PATH / "parcoursup.json"
-        with open(data_path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
-            df = pd.DataFrame(data['results'])
-        
-        # Utiliser la nouvelle fonction à la place de l'ancienne
-        display_prediction_interface(df, show_title=False)
+        # Dans la section Data Parcoursup, utiliser les données en cache
+        if 'parcoursup_data' in st.session_state:
+            display_prediction_interface(st.session_state.parcoursup_data, show_title=False)
+        else:
+            st.error("Données non disponibles")
     
     # Footer
     st.markdown("---")
