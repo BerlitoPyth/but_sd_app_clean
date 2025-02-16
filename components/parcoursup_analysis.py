@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
 import json
+from components.admission_prediction import display_prediction_interface
 
 def clean_and_transform_data(df):
     """Nettoyer et transformer les données"""
@@ -40,7 +41,7 @@ def clean_and_transform_data(df):
 
 def load_parcoursup_data():
     """Charger et transformer les données Parcoursup depuis le fichier JSON"""
-    try:
+    try:  # Correction : remplacement de { par :
         # Charger le fichier JSON
         data_path = Path(__file__).parent.parent / ".data" / "parcoursup.json"
         with open(data_path, 'r', encoding='utf-8') as file:
@@ -259,3 +260,31 @@ def display_parcoursup_analysis(show_title=True):
             )
         )
         st.plotly_chart(fig, use_container_width=True)
+
+    # Ajout de la nouvelle section de prédiction
+    st.markdown("---")
+    st.header("🎯 Prédiction d'admission")
+    
+    # Ajout d'un expander pour les explications
+    with st.expander("ℹ️ Comment fonctionne la prédiction ?"):
+        st.markdown("""
+        Le calcul des chances d'admission est basé sur 3 facteurs principaux pondérés :
+
+        1. **Profil du candidat (40%)**
+        - Correspondance avec les profils historiquement admis
+        - Répartition typique : ~70% Bac général, ~20% Bac technologique, ~10% Autres
+
+        2. **Places disponibles (30%)**
+        - Nombre de places encore disponibles
+        - Ratio par rapport à la capacité totale
+        - Taux de pression (nombre de candidats par place)
+
+        3. **Taux d'accès historique (30%)**
+        - Statistiques réelles d'admission de l'établissement
+        - Taux de conversion candidature → admission
+
+        *Note : Ces statistiques sont basées sur les données officielles Parcoursup 2024*
+        """)
+    
+    # Affichage de l'interface de prédiction
+    display_prediction_interface(df)

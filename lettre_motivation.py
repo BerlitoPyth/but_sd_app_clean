@@ -3,6 +3,8 @@ import time
 from PIL import Image
 import random
 import sys
+import json  # Ajout de l'import manquant
+import pandas as pd  # Ajout de l'import pour DataFrame
 from pathlib import Path
 
 # Ajout du chemin absolu au PYTHONPATH
@@ -20,11 +22,7 @@ try:
     from components.projet_gaming import display_project_concept
     from components.matrix_animation import display_matrix_animation
     from components.intro_tree import display_intro_tree
-    try:
-        from components.parcoursup_analysis import display_parcoursup_analysis
-    except ImportError:
-        def display_parcoursup_analysis():
-            st.error("Module d'analyse Parcoursup non disponible")
+    from components.admission_prediction import display_prediction_interface
     print("Imports des composants réussis")
 except ImportError as e:
     print(f"Erreur d'import: {e}")
@@ -74,7 +72,14 @@ def load_css():
         except Exception as e:
             print(f"Erreur lors du chargement de {css_file}: {e}")
 
+def get_image_base64(image_path):
+    """Convert image to base64 string"""
+    import base64
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
 def main():
+    # Déplacer la configuration de la page ici, tout en haut
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide",
@@ -83,11 +88,7 @@ def main():
     
     load_css()
     
-    # Nouvelle logique de séquence
-    if not st.session_state.get('intro_shown'):
-        display_intro_tree()
-        return
-        
+    # Nouvelle logique de séquence - Suppression de l'intro tree
     if not st.session_state.get('animation_shown'):
         display_matrix_animation()
         st.session_state.animation_shown = True
@@ -126,14 +127,6 @@ def main():
         except Exception as e:
             print(f"Erreur lors du chargement de la lettre: {str(e)}")
             st.error("Lettre de recommandation non disponible")
-
-        # Disclaimer après la lettre
-        st.info("""
-        ⚠️ **Disclaimer:**
-        Cette application a été entièrement conçue et développée par mes soins. 
-        Aucun template n'a été utilisé.
-        
-        Les idées, le design et le code sont originaux, réalisés avec l'assistance d'outils d'IA comme GitHub Copilot et Claude.""")
         
         # Formations en dernier
         st.success("""
@@ -166,57 +159,83 @@ def main():
 
     # Contenu principal basé sur la sélection
     if selection == "🏠 Accueil":
-        # Création d'un container pour le titre et la photo
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.markdown("""
-                <div style="margin: 0;">
-                    <h1 style="
-                        font-size: 2.5em;
-                        margin: 0 0 0.5rem 0;
-                        color: inherit;
-                    ">Candidature BUT Science des Données</h1>
-                    <h2 style="
-                        font-size: 1.5em;
-                        margin: 0 0 1rem 0;
-                        color: inherit;
-                    ">Adrien BERLIAT</h2>
-                </div>
-            """, unsafe_allow_html=True)
+        # Style mise à jour
+        st.markdown("""
+            <style>
+            .header-content {
+                display: flex;
+                align-items: center;
+                gap: 2rem;
+                padding: 1rem 2rem;
+                width: 100%;
+            }
             
-            # Effet machine à écrire
-            if 'title_written' not in st.session_state:
-                write_text_slowly("De la profondeur des océans à la profondeur des données... 🌊➡️📊")
-                st.session_state.title_written = True
-            else:
-                st.markdown("""
-                    <h3 style="
-                        font-style: italic;
-                        color: inherit;
-                        font-size: 1.2em;
-                        margin: 0 0 2rem 0;
-                    ">De la profondeur des océans à la profondeur des données... 🌊➡️📊</h3>
-                """, unsafe_allow_html=True)
+            .photo-container {
+                flex-shrink: 0;
+                width: 150px;  /* Augmenté de 100px à 150px */
+                height: 150px; /* Augmenté de 100px à 150px */
+            }
+            
+            .photo-container img {
+                width: 150px;  /* Augmenté de 100px à 150px */
+                height: 150px; /* Augmenté de 100px à 150px */
+                object-fit: cover;
+            }
+            
+            .text-content {
+                flex-grow: 1;
+            }
+            
+            .title-text {
+                font-size: 2em !important;
+                margin: 0 !important;
+                line-height: 1.1;
+                color: inherit;
+                font-weight: bold;
+            }
+            
+            .subtitle-text {
+                font-size: 1.3em !important;
+                margin: 0.2rem 0 !important;
+                color: inherit;
+                font-weight: 500;
+            }
+            
+            .motto-text {
+                font-style: italic;
+                font-size: 1em;
+                margin: 0.2rem 0 !important;
+            }
+            </style>
+        """, unsafe_allow_html=True)
 
-        with col2:
-            try:
-                image = Image.open(".assets/photo.jpg")
-                image_rotated = image.rotate(-90, expand=True)
-                st.image(image_rotated, width=200)
-            except Exception as e:
-                st.info("📸 Photo non disponible")
-                print(f"Erreur: {e}")
-        
-        st.markdown("---")
-        
-        # Reste du contenu
-        add_floating_chat_to_app()
+        # Header avec nouvelle structure
+        header_html = f"""
+            <div class="page-header">
+                <div class="header-content">
+                    <div class="photo-container">
+                        <img src="data:image/jpg;base64,{get_image_base64(".assets/photo.jpg")}" 
+                             width="150" style="transform: rotate(0deg);">  <!-- Augmenté à 150 -->
+                    </div>
+                    <div class="text-content">
+                        <h1 class="title-text">Candidature BUT Science des Données</h1>
+                        <h2 class="subtitle-text">Adrien BERLIAT</h2>
+                        <p class="motto-text">De la profondeur des océans à la profondeur des données... 🌊➡️📊</p>
+                    </div>
+                </div>
+            </div>
+        """
+        st.markdown(header_html, unsafe_allow_html=True)
+
+        # Contenu avec marges
+        st.markdown('<div class="content-section">', unsafe_allow_html=True)
         
         # Points clés
+        st.markdown('<div class="points-container">', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.success("""
-            ### ✨ Points Clés
+            #### Points Clés
             - 📊 Goût pour les mathématiques
             - 🤝 Expérience du travail d'équipe
             - 💡 Autodidacte
@@ -224,31 +243,30 @@ def main():
             """)
         with col2:
             st.info("""
-            ### 🎓 Formation Actuelle
+            #### Formation Actuelle
             - 📚 DAEU B en cours
             - 💻 Certifications Python
             - 🔍 École 42 - La Piscine
             - 🌟 Excellents résultats en sciences
             """)
-            
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Chat
+        add_floating_chat_to_app()
+        
         st.markdown("---")
         
-        # Titre de la lettre de motivation avec icône
+        # Lettre de motivation
         st.markdown("""
-            <h2 style="
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                margin: 1rem 0;
-                line-height: 1.2;
-            ">
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
                 📜 Ma Lettre de Motivation
             </h2>
         """, unsafe_allow_html=True)
         
-        # Contenu de la lettre et note
         st.markdown(get_lettre_motivation_content())
         st.markdown(get_note_importante(), unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)  # Fermeture du content-section
 
     elif selection == "👤 Présentation":
         st.markdown("""
@@ -292,7 +310,15 @@ def main():
                 color: inherit;
             ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
         """, unsafe_allow_html=True)
-        display_parcoursup_analysis(show_title=False)  # Ajout du paramètre pour éviter le doublon
+        
+        # Chargement des données Parcoursup
+        data_path = Path(project_root) / ".data" / "parcoursup.json"
+        with open(data_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            df = pd.DataFrame(data['results'])
+        
+        # Utiliser la nouvelle fonction à la place de l'ancienne
+        display_prediction_interface(df, show_title=False)
     
     # Footer
     st.markdown("---")

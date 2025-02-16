@@ -34,8 +34,8 @@ def get_lettre_motivation_content():
     J'ai aussi créé un concept innovant (voir section "Projet") dans le domaine du gaming. Cette expérience a renforcé ma conviction que l'analyse de données
     est un outil puissant et essentiel pour créer des solutions pertinentes.
     
-    Lors des journées portes ouvertes de l'IUT, j'ai beaucoup apprécié l'ambiance générale ainsi que les échanges que j'ai pu avoir avec
-    les enseignants et les étudiants, notamment avec Monsieur Mellouk, qui a gentiment pris le temps de répondre à mes questions.
+    Lors des journées portes ouvertes, j'ai beaucoup apprécié l'ambiance générale et l'atmosphère propice à l'apprentissage qui régnait dans l'IUT. Aussi, j'ai eu la chance d'échanger avec
+    des enseignants et étudiants, notamment avec Monsieur Mellouk, qui a gentiment pris le temps de répondre à mes questions, sans oublier la qualité de la présentation de Monsieur Poggi.
     Cette expérience a d'autant plus renforcé mon envie d'intégrer votre établissement, qui correspond pleinement à mes attentes en termes 
     d'exigence et de quête d'excellence.
     
