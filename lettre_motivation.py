@@ -108,7 +108,7 @@ def main():
         st.session_state.animation_shown = True
         with st.spinner('Chargement...'):
             time.sleep(2)
-            st.experimental_rerun()  # Utiliser experimental_rerun au lieu de rerun
+            st.rerun()  # Changé de st.experimental_rerun() à st.rerun()
         return
 
     # Le reste du code principal (sidebar, contenu, etc.)
@@ -168,7 +168,7 @@ def main():
                     st.image(lettre, use_container_width=True)
                     if st.button("❌ Fermer", key="close_fullscreen"):
                         st.session_state.lettre_agrandie = False
-                        st.rerun()
+                        st.rerun()  # Changé de st.experimental_rerun() à st.rerun()
                 except Exception as e:
                     st.error("Impossible d'afficher la lettre en plein écran")
                     print(f"Erreur: {e}")

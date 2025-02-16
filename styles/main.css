@@ -90,6 +90,47 @@ h2 {
     width: 100%;
 }
 
+/* Styles spécifiques pour les boutons */
+.stButton > button {
+    background-color: #00FF41 !important;
+    color: #000000 !important;
+    border: 2px solid #00FF41 !important;
+    transition: all 0.3s ease !important;
+}
+
+.stButton > button:hover {
+    background-color: #111111 !important;
+    color: #00FF41 !important;
+    border-color: #00FF41 !important;
+}
+
+/* Style pour les widgets */
+.stSelectbox > div > div, 
+.stMultiSelect > div > div {
+    background-color: #0E1117 !important;
+    color: #FFFFFF !important;
+    border-color: #00FF41 !important;
+}
+
+/* Style pour les onglets */
+.stTabs [data-baseweb="tab"] {
+    color: #FFFFFF !important;
+}
+
+.stTabs [data-baseweb="tab-list"] {
+    background-color: #0E1117 !important;
+    border-color: #00FF41 !important;
+}
+
+/* Style pour les cartes metrics */
+[data-testid="stMetric"] {
+    background-color: #0E1117 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #00FF41 !important;
+    padding: 1rem !important;
+    border-radius: 0.5rem !important;
+}
+
 /* Images */
 .stImage {
     transition: transform 0.3s ease;
