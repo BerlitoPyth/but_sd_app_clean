@@ -113,6 +113,7 @@ def main():
             with open(DATA_PATH / "parcoursup.json", 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 st.session_state.parcoursup_data = pd.DataFrame(data['results'])
+        st.session_state.data_loaded = True
     except Exception as e:
         print(f"Erreur chargement données: {e}")
         st.error("Erreur lors du chargement des données")
@@ -333,11 +334,16 @@ def main():
             ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
         """, unsafe_allow_html=True)
         
-        # Dans la section Data Parcoursup, utiliser les données en cache
-        if 'parcoursup_data' in st.session_state:
-            display_prediction_interface(st.session_state.parcoursup_data, show_title=False)
-        else:
-            st.error("Données non disponibles")
+        # Dans la section Data Parcoursup, simplifie le chargement
+        try:
+            data_path = DATA_PATH / "parcoursup.json"
+            with open(data_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                df = pd.DataFrame(data['results'])
+            display_prediction_interface(df, show_title=False)
+        except Exception as e:
+            st.error("Erreur lors du chargement des données")
+            print(f"Erreur: {e}")
     
     # Footer
     st.markdown("---")
