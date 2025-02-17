@@ -3,9 +3,15 @@ import time
 from PIL import Image
 import random
 import sys
-import json  # Ajout de l'import manquant
-import pandas as pd  # Ajout de l'import pour DataFrame
-from pathlib import Path
+import json
+import pandas as pd
+import os  # Ajout ici
+from pathlib import Path  # Déjà présent mais déplacé ici
+
+# Définir les chemins de manière plus robuste
+ROOT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+ASSETS_PATH = ROOT_DIR / ".assets"
+DATA_PATH = ROOT_DIR / ".data"
 
 # Ajout du chemin absolu au PYTHONPATH
 file_path = Path(__file__).resolve()
@@ -88,7 +94,19 @@ def get_image_base64(image_path):
     except Exception as e:
         print(f"Erreur de chargement image: {e}")
         return ""
-
+def load_parcoursup_data():
+    try:
+        # Utiliser os.path.join pour plus de compatibilité
+        data_path = os.path.join(DATA_PATH, "parcoursup.json")
+        if os.path.exists(data_path):
+            with open(data_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+                return pd.DataFrame(data['results'])
+        else:
+            raise FileNotFoundError(f"Fichier non trouvé: {data_path}")
+    except Exception as e:
+        print(f"Erreur de chargement: {str(e)}")
+        return None
 def main():
     # Configuration de base
     st.set_page_config(
@@ -97,13 +115,18 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Chargement CSS avant tout
+    # Gestion simple des states
+    if 'animation_shown' not in st.session_state:
+        st.session_state.animation_shown = False
+    
+    # CSS en premier
     load_css()
     
-    # Gestion de l'animation (simplifiée)
-    if not st.session_state.get('init_done'):
+    # Uniquement l'animation matrix au démarrage
+    if not st.session_state.animation_shown:
         display_matrix_animation()
-        st.session_state.init_done = True
+        st.session_state.animation_shown = True
+        time.sleep(1)
         st.rerun()
         return
 

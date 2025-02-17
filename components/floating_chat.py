@@ -205,6 +205,16 @@ Cette année, je prépare un DAEU B à distance avec l'objectif d'intégrer un B
 
 def add_floating_chat_to_app():
     """Main function to add chat functionality to Streamlit app"""
+    # Limite des appels API
+    if 'api_calls' not in st.session_state:
+        st.session_state.api_calls = 0
+    
+    MAX_API_CALLS = 50  # Limite par session
+    
+    if st.session_state.api_calls >= MAX_API_CALLS:
+        st.warning("Limite de messages atteinte pour cette session.")
+        return
+
     # Initialize or get chat state
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -247,6 +257,7 @@ def add_floating_chat_to_app():
         if prompt := st.chat_input("Posez votre question...", key="chat_input"):
             if not st.session_state.waiting_for_response:
                 st.session_state.waiting_for_response = True
+                st.session_state.api_calls += 1
                 response = generate_response(client, prompt, st.session_state.messages)
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 st.session_state.messages.append({"role": "assistant", "content": response})
@@ -260,6 +271,7 @@ def add_floating_chat_to_app():
         def handle_button_click(question):
             if not st.session_state.waiting_for_response:
                 st.session_state.waiting_for_response = True
+                st.session_state.api_calls += 1
                 response = generate_response(client, question, st.session_state.messages)
                 st.session_state.messages.append({"role": "user", "content": question})
                 st.session_state.messages.append({"role": "assistant", "content": response})
