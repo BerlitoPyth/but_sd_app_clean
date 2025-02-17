@@ -1,292 +1,230 @@
 import streamlit as st
 from openai import OpenAI
 
-def init_chat_client():
-    """Initialize OpenAI client with API key"""
-    try:
-        print("Checking for secrets...")
-        
-        if hasattr(st.secrets, "OPENAI_API_KEY"):
-            api_key = st.secrets["OPENAI_API_KEY"]
-            print("API Key found:", api_key[:5] + "..." + api_key[-4:])  # Affiche juste le début et la fin de la clé
-            
-            if not api_key.startswith("sk-"):
-                st.error("Format de clé API invalide. La clé doit commencer par 'sk-'")
-                return None
-                
-            client = OpenAI(api_key=api_key)
-            
-            # Test API connection with minimal tokens
-            test_response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": "Test"}],
-                max_tokens=1
-            )
-            print("API connection test successful")
-            return client
-            
-    except Exception as e:
-        st.error(f"Erreur d'initialisation OpenAI: {str(e)}")
-        return None
+# Configuration du client OpenAI
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-def create_chat_interface():
-    """Create chat interface using Streamlit components"""
+# Réponses préenregistrées dans un format plus accessible
+PREDEFINED_RESPONSES = {
+    "pourquoi le but sd": """La science des données est un domaine en pleine expansion, au cœur de l'innovation, et c'est précisément ce qui m'attire.
+Je suis passionné par les mathématiques et l'informatique, et j'ai toujours aimé jouer avec les chiffres. Ce qui me motive particulièrement, c'est d'apprendre à « faire parler les données ».""",
+    
+    "quel est ton parcours": """J'ai commencé en terminale STI2D, que j'ai quittée en cours d'année, avant de passer par la piscine de l'école 42.
+Après un détour par l'entrepreneuriat et un diplôme à l'École Nationale des Scaphandriers, j'ai décidé de me réorienter vers la science des données.""",
+    
+    "quelles sont tes motivations": """Ma principale motivation est de combiner ma passion pour les mathématiques et l'informatique avec mon désir d'évolution professionnelle.
+Je suis fasciné par la façon dont les données peuvent nous aider à comprendre le monde et à prendre de meilleures décisions."""
+}
+
+# Contexte pour OpenAI
+system_prompt = """
+Tu es Adrien BERLIAT, 25 ans, en préparation d'un DAEU-B après une reprise d'étude.
+Tu réponds aux questions sur ta candidature au BUT Science des Données.
+Les questions proviennent de professeurs et recruteurs pour l'admission.
+
+Profil rapide :
+- Ex-plongeur scaphandrier professionnel (École Nationale des Scaphandriers)
+- Expérience en programmation (École 42, certifications Python)
+- Passionné de mathématiques et d'informatique depuis l'enfance
+- Grande capacité d'adaptation prouvée par ta reconversion
+- Expérience en gestion de projets techniques et travail en équipe
+- Objectif : Intégrer le BUT SD puis poursuivre en master/école d’ingénieur pour devenir Data Analyst.
+
+Réponds de manière **professionnelle mais sympathique**, en restant concis et humble.
+Mets en avant ta motivation et ton parcours unique quand c'est pertinent.
+"""
+
+def generate_response(client, message, conversation_history):
+    """Génère une réponse en fonction du message reçu."""
+
+    # Vérifier si la question a une réponse préenregistrée
+    message_lower = message.lower().strip('?').strip()  # Enlever les ? et les espaces
+    
+    # Mapping des questions pour les variations courantes
+    question_mapping = {
+        "pourquoi le but sd": "pourquoi le but sd",
+        "quel est ton parcours": "quel est ton parcours",
+        "quelles sont tes motivations": "quelles sont tes motivations",
+        # Ajout des variations avec point d'interrogation
+        "pourquoi le but sd ?": "pourquoi le but sd",
+        "quel est ton parcours ?": "quel est ton parcours",
+        "quelles sont tes motivations ?": "quelles sont tes motivations",
+    }
+
+    # Vérifier si la question est dans le mapping
+    if message_lower in question_mapping:
+        key = question_mapping[message_lower]
+        return PREDEFINED_RESPONSES[key]
+
+    # Si pas de réponse préenregistrée, utiliser OpenAI
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": message}
+    ]
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  # Utilisation de GPT-3.5 au lieu de GPT-4
+            messages=messages,
+            temperature=0.7,  # Ajout d'un paramètre de température pour des réponses plus rapides
+            max_tokens=200    # Limite la longueur des réponses
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        st.error(f"Erreur: {str(e)}")
+        return "Une erreur est survenue, merci de réessayer."
+
+def add_floating_chat_to_app():
+    """Ajoute le chat à l'application"""
     st.markdown("""
         <style>
-        /* Light mode styles */
-        [data-theme="light"] .chat-container {
-            border-radius: 10px;
-            background-color: #ffffff;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
+        .chat-message {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
         }
-        [data-theme="light"] .bot-message {
-            background-color: #f0f2f6;
-            color: #262730;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-            border: 1px solid #e0e0e0;
-        }
-
-        /* Dark mode styles */
-        [data-theme="dark"] .chat-container {
-            border-radius: 10px;
-            background-color: #1E1F25;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        [data-theme="dark"] .bot-message {
-            background-color: #2D3748;
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
-        }
-
-        /* Common styles */
+        
         .user-message {
-            background-color: #3182CE;
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 5px 0;
             text-align: right;
+            background-color: #E8F0FF;
+            border: 1px solid #D0E1FF;
+            color: #1F2937;
+        }
+        
+        .bot-message {
+            text-align: left;
+            background-color: #F3F4F6;
+            border: 1px solid #E5E7EB;
+            color: #1F2937;
+        }
+
+        /* Style des boutons */
+        .stButton > button {
+            background-color: #F3F4F6;
+            color: #1F2937;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .stButton > button:hover {
+            background-color: #E5E7EB;
+            border-color: #D1D5DB;
+        }
+
+        /* Style de l'input */
+        .stTextInput > div > div > input {
+            border-radius: 0.5rem;
+            border: 1px solid #E5E7EB;
+            color: #1F2937;
+        }
+
+        /* Hide empty labels only in chat input */
+        .stTextInput [data-testid="stWidgetLabel"]:empty,
+        .stTextInput .st-emotion-cache-aoyl2m:empty,
+        .stTextInput div[data-testid="stMarkdownContainer"]:empty {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Keep other elements visible */
+        .block-container {
+            display: block !important;
+        }
+
+        /* Ensure chat components are visible */
+        .chat-message,
+        .stButton,
+        .stTextInput {
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        /* Style spécifique pour les boutons de questions prédéfinies */
+        .stButton > button {
+            background-color: #1a1d23 !important;  /* Même couleur que sidebar_bg */
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Effet hover sur les boutons */
+        .stButton > button:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            transform: translateX(4px);
+        }
+
+        /* S'assurer que le texte des boutons reste blanc */
+        .stButton > button p,
+        .stButton > button span,
+        .stButton > button div {
+            color: white !important;
+        }
+
+        /* Ajuster les marges des boutons pour un meilleur espacement */
+        .stButton {
+            margin: 0.25rem 0 !important;
         }
         </style>
     """, unsafe_allow_html=True)
-
-def generate_response(client, message, conversation_history):
-    """Generate response using OpenAI API"""
-    # Handle specific questions with predefined answers
-    if message.lower() == "pourquoi le but sd ?" or message.lower() == "pourquoi le but sd":
-        return """La science des données est un domaine en pleine expansion, au cœur de l'innovation, et c'est précisément ce qui m'attire. Je suis passionné par les mathématiques et l'informatique, et j'ai toujours aimé jouer avec les chiffres. Ce qui me motive particulièrement, c'est d'apprendre à « faire parler les données », à en extraire du sens et des informations utiles pour la prise de décision.
-Je suis de près l'actualité de la data science, car c'est un secteur qui évolue constamment, et j'ai besoin de cette stimulation intellectuelle. Pour moi, la science des données est bien plus qu'un domaine technique : c'est une manière de comprendre et d'agir sur le monde grâce aux chiffres."""
     
-    # Add new predefined answer for parcours question
-    if message.lower() in ["quel est ton parcours ?", "quel est ton parcours", "ton parcours ?", "ton parcours"]:
-        return """J'ai commencé en terminale STI2D, que j'ai quittée en cours d'année, avant de passer par la piscine de l'école 42. Après un détour par l'entrepreneuriat et un diplôme à l'École Nationale des Scaphandriers, j'ai décidé de me réorienter vers la science des données.
-
-Cette année, je prépare un DAEU B à distance avec l'objectif d'intégrer un BUT Sciences des Données, puis de poursuivre en master ou école d'ingénieur pour devenir data analyst. En parallèle, je me certifie en Python sur Coursera et développe un projet entrepreneurial dans le domaine du gaming et de l'informatique."""
-
-    system_prompt = """
-    Tu es Adrien BERLIAT, 25ans actuellement en préparation d'un DAEU-B après une reprise d'étude et tu réponds aux questions sur ta candidature pour le BUT Science des Données.
-    Les questions vont provenir de professeur et recruteur pour l'admission en BUT Science des Données.
+    st.markdown("### 💬 Posez vos questions sur ma candidature")
     
-    Ma lettre de motivation pour en savoir plus sur moi :
-    Madame, Monsieur,
-
-    C'est avec enthousiasme que je vous présente ma candidature pour le BUT Science des Données, une formation qui représente pour moi l'opportunité idéale d'allier ma passion pour les mathématiques et l'informatique à mon désir d'évolution professionnelle.
-
-    Mon parcours, bien qu'atypique, témoigne de mon intérêt précoce pour le monde numérique et de ma capacité d'adaptation.
-
-    À 17 ans, après avoir décidé d'arrêter ma terminale STI-2D pour diverses raisons, j'ai participé à la 'piscine' de l'École 42, une expérience intense qui a confirmé mon attrait pour la programmation et renforcé ma logique algorithmique.
-
-    Par la suite, en tant que plongeur scaphandrier, j'ai évolué dans un environnement exigeant où la précision, le travail d'équipe et la gestion du stress étaient essentiels.
-
-    Cette capacité à relever des défis remonte à ma jeunesse.À 11 ans, je suis devenu champion de France de pentathlon, une expérience formatrice qui m'a inculqué persévérance et rigueur dès mon plus jeune âge.
-
-    Dans un tout autre domaine, en 2019, j'ai réussi à me classer parmi les meilleurs joueurs mondiaux sur le jeu vidéo le plus joué et l'un des plus compétitifs de la scène e-sportive de l'époque.
-
-    Mon intérêt pour la technologie et l'analyse de données s'est récemment concrétisé à travers un projet entrepreneurial innovant. J'ai créé un concept de vente de PC gaming basé sur l'analyse détaillée des besoins clients et des performances réelles. Cette expérience a renforcé ma conviction que l'analyse de données est un outil puissant pour créer des solutions pertinentes et accessibles.
-
-    Les mathématiques ont toujours été une passion pour moi. Cette affinité naturelle, présente depuis mon plus jeune âge, s'est pleinement confirmée lors de ma reprise d'études en DAEU B. J'ai choisi de suivre cette formation à distance, ce qui m'a apprit à m'organiser de manière autonome et à maintenir un haut niveau d'exigence dans mes études.
-
-    Pour préparer ma reconversion et maximiser mes chances de réussite, j'ai pris l'initiative, en parallèle, de suivre des formations certifiantes en Python sur Coursera, ce qui a consolidé mon intérêt pour la programmation et le secteur de la data. Je me suis également initié à l'analyse de données à travers des projets sur Kaggle, renforçant ainsi mes compétences techniques.
-
-    Le BUT Science des Données représente pour moi l'alliance parfaite entre :
-
-    Ma passion historique pour les mathématiques
-    Mon expérience précoce en programmation avec l'École 42
-    Mes projets personnels
-    Mon goût pour les défis techniques
-    Mon désir d'apprentissage continu
-    Ma reconversion professionnelle est le fruit d'une réflexion approfondie. Je suis pleinement conscient des efforts qu'implique ce changement de carrière, mais je suis persuadé que ma détermination et mes capacités d'adaptation sont des atouts solides pour réussir dans cette voie.
-
-    Je suis convaincu que mon parcours atypique et mon désir d'apprendre feront de moi un atout pour votre formation. Je reste à votre disposition pour vous présenter mon projet plus en détail.
-
-    Je vous prie d'agréer, Madame, Monsieur, l'expression de mes sincères salutations.
-    Ton profil :
-    - Actuellement en DAEU B avec d'excellents résultats en mathématiques et physique (dans toutes les matières d'ailleurs)
-    - Ex-plongeur scaphandrier professionnel diplomé de École Nationale des Scaphandriers
-    - Piscine à l'École 42 et certifications Python
-    - Goût pour les mathématiques et l'informatique depuis l'enfance et sciences en général
-    - Grande capacité d'adaptation prouvée par ta reconversion
-    - Résolution des problèmes et rigueur et précision dans le travail
-    - Tu as déjà travaillé en équipe et en autonomie
-    - Tu as déjà géré des projets techniques complexes
-    - Tu as une excellente capacité de travail sous pression
-    - Tu as une excellente capacité d'analyse et de synthèse
-    - Tu as une excellente capacité de communication
-    - Tu es respectueux et un bon coéquipier
-    - Motivation à toute épreuve
-    - J'ai arrêté la plongée professionnelle car je voulais me rediriger vers cette passio qu'est la data science mais aussi car je ne pouvais avoir du situation stable que ça soit
-      financièrement et socialement dût au fait que j'étais beaucoup en déplacement.
-
-    Projet entrepreunarial :
-
-    -Création d'un concept innovant de vente de PC gaming :
-
-     Analyse des Besoins :
-
-    Développement d'un questionnaire client détaillé
-    Analyse des usages (gaming, streaming, montage)
-    Étude des exigences techniques par jeu
-    Solution Innovante :
-
-    Création de 5 gammes (configurations) optimisées et adaptées aux besoins du client
-    Tableaux de performances détaillés
-    Tests réels sur différents jeux
-    Documentation vidéo des performances
-    Objectif :
-
-    Démocratiser le PC gaming
-    Permettre au client de ne payer que pour ce dont il a réellement besoin
-    Conseils personnalisés basés sur les données
-    Transparence sur les performances réelles
-    
-    Ton objectif : Intégrer le BUT Science des Données pour allier ta passion des mathématiques à l'informatique et relever de nouveaux défis stimulants. 
-    Et ensuite continuer les études en Master ou école d'ingénieur pour devenir Data Scientist.  
-    Réponds de manière professionnelle mais sympathique, en quelques phrases concises et en restant humble.
-    Mets en avant ta motivation et ton parcours unique quand c'est pertinent.
-    """
-    
-    try:
-        # Debug print
-        print(f"Sending message to OpenAI: {message}")
-        
-        # Prepare messages for the API call
-        messages = [
-            {"role": "system", "content": system_prompt},
-            *[{"role": msg["role"], "content": msg["content"]} for msg in conversation_history],
-            {"role": "user", "content": message}
-        ]
-        
-        # Make API call
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=150
-        )
-        
-        # Debug print
-        print(f"Received response: {response.choices[0].message.content}")
-        
-        return response.choices[0].message.content
-    except Exception as e:
-        # Detailed error logging
-        import traceback
-        print(f"Error in generate_response: {str(e)}")
-        print(traceback.format_exc())
-        st.error(f"Error: {str(e)}")
-        return f"Désolé, une erreur est survenue: {str(e)}"
-
-def add_floating_chat_to_app():
-    """Main function to add chat functionality to Streamlit app"""
-    # Limite des appels API
-    if 'api_calls' not in st.session_state:
-        st.session_state.api_calls = 0
-    
-    MAX_API_CALLS = 50  # Limite par session
-    
-    if st.session_state.api_calls >= MAX_API_CALLS:
-        st.warning("Limite de messages atteinte pour cette session.")
-        return
-
-    # Initialize or get chat state
+    # Initialize session state first
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    if "previous_page" not in st.session_state:
-        st.session_state.previous_page = None
-    if "waiting_for_response" not in st.session_state:
-        st.session_state.waiting_for_response = False
-
-    # Get current page
-    current_page = st.session_state.get('selection', None)
-
-    # Check for page change and clear messages if needed
-    if current_page != st.session_state.previous_page:
-        st.session_state.messages = []
-        st.session_state.previous_page = current_page
-        st.session_state.waiting_for_response = False
-
-    # Initialize OpenAI client
-    client = init_chat_client()
-    if not client:
-        return
-
-    # Create chat interface
-    create_chat_interface()
-
-    # Chat container
-    chat_container = st.container()
     
-    with chat_container:
-        # Display existing messages
-        for message in st.session_state.messages:
-            div_class = "user-message" if message["role"] == "user" else "bot-message"
-            st.markdown(f"""
-                <div class="{div_class}">
-                    {message["content"]}
-                </div>
-            """, unsafe_allow_html=True)
+    # Limit messages to last question and answer (max 2 messages)
+    if len(st.session_state.messages) > 2:
+        st.session_state.messages = st.session_state.messages[-2:]
 
-        # Handle chat input
-        if prompt := st.chat_input("Posez votre question...", key="chat_input"):
-            if not st.session_state.waiting_for_response:
-                st.session_state.waiting_for_response = True
-                st.session_state.api_calls += 1
-                response = generate_response(client, prompt, st.session_state.messages)
-                st.session_state.messages.append({"role": "user", "content": prompt})
-                st.session_state.messages.append({"role": "assistant", "content": response})
-                st.session_state.waiting_for_response = False
-                st.rerun()
+    # Affichage des messages existants
+    for msg in st.session_state.messages:
+        is_user = msg["role"] == "user"
+        st.markdown(
+            f"""<div class="chat-message {'user-message' if is_user else 'bot-message'}">
+                {'' if is_user else '🤖 '}{msg['content']}
+            </div>""", 
+            unsafe_allow_html=True
+        )
 
-        # Suggestion buttons in columns
-        col1, col2, col3 = st.columns(3)
-        
-        # Helper function for button handling
-        def handle_button_click(question):
-            if not st.session_state.waiting_for_response:
-                st.session_state.waiting_for_response = True
-                st.session_state.api_calls += 1
-                response = generate_response(client, question, st.session_state.messages)
-                st.session_state.messages.append({"role": "user", "content": question})
-                st.session_state.messages.append({"role": "assistant", "content": response})
-                st.session_state.waiting_for_response = False
-                st.rerun()
+    # Entrée utilisateur (removed the "Vous:" label)
+    user_input = st.text_input("", key="chat_input", placeholder="Posez votre question ici...")
+    
+    # Gestion des boutons de questions suggérées
+    col1, col2, col3 = st.columns(3)
+    
+    button_clicked = False
+    if col1.button("Pourquoi le BUT SD ?"):
+        user_input = "Pourquoi le BUT SD ?"
+        button_clicked = True
+    if col2.button("Ton parcours ?"):
+        user_input = "Quel est ton parcours ?"
+        button_clicked = True
+    if col3.button("Tes motivations ?"):
+        user_input = "Quelles sont tes motivations ?"
+        button_clicked = True
 
-        # Button columns
-        with col1:
-            if st.button("Pourquoi le BUT SD ?", key="but_sd_button"):
-                handle_button_click("Pourquoi le BUT SD ?")
+    # Traitement de l'entrée (soit par texte soit par bouton)
+    if user_input and (button_clicked or st.session_state.get("last_input") != user_input):
+        # Réinitialiser les messages pour ne garder que la dernière interaction
+        st.session_state.messages = []
         
-        with col2:
-            if st.button("Ton parcours ?", key="parcours_button"):
-                handle_button_click("Quel est ton parcours ?")
+        # Ajouter le nouveau message
+        st.session_state.messages.append({"role": "user", "content": user_input})
         
-        with col3:
-            if st.button("Tes motivations ?", key="motivations_button"):
-                handle_button_click("Quelles sont tes motivations ?")
+        try:
+            # Obtenir la réponse
+            response = generate_response(client, user_input, [])  # Plus besoin de l'historique
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.session_state["last_input"] = user_input
+            
+        except Exception as e:
+            st.error(f"Erreur: {str(e)}")
+        
+        st.rerun()

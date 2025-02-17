@@ -143,107 +143,78 @@ def display_summary_stats(data):
         """, unsafe_allow_html=True)
 
 def display_prediction_interface(data, show_title=True):
-    """Interface de prédiction"""
-    if 'prediction_state' not in st.session_state:
-        st.session_state.prediction_state = {}
-        
-    # Empêcher les reruns infinis
-    if 'is_loading' not in st.session_state:
-        st.session_state.is_loading = False
-
-    if st.session_state.is_loading:
-        return
-
-    if show_title:
-        st.markdown("""
-            <h1 style="
-                font-size: 2.5em;
-                margin: 0;
-                padding: 0;
-                color: inherit;
-            ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
-        """, unsafe_allow_html=True)
+    """Interface de prédiction des chances d'admission"""
+    # Remove stats and title display from here since they're handled in main app
     
-    # Affichage des statistiques globales
-    display_summary_stats(data)
+    # Selection interface
+    col1, col2 = st.columns(2)
     
-    # Ajout des onglets
-    tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
+    with col1:
+        iut_choice = st.selectbox("Choisissez votre IUT cible", data['g_ea_lib_vx'].unique())
+        bac_type = st.selectbox("Type de Bac/Diplôme", ["DAEU", "Général", "Technologique"])
     
-    with tab1:
-        st.markdown("### 🎯 Prédiction des chances d'admission")
-        
-        # Sélection établissement et profil
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            iut_choice = st.selectbox("Choisissez votre IUT cible", data['g_ea_lib_vx'].unique())
-            bac_type = st.selectbox("Type de Bac/Diplôme", ["DAEU", "Général", "Technologique"])
-        
-        with col2:
-            mention = st.selectbox("Mention", ["Sans mention", "AB", "B", "TB"])
-        
-        profile = {
-            'bac_type': bac_type,
-            'mention': mention,
-            'boursier': st.checkbox("Je suis boursier", help="Cochez si vous êtes boursier")
-        }
+    with col2:
+        mention = st.selectbox("Mention", ["Sans mention", "AB", "B", "TB"])
+        boursier = st.checkbox("Je suis boursier", help="Cochez si vous êtes boursier")
 
-        # Calculate probability using new logic
-        probability, stats = calculate_admission_probability(data[data['g_ea_lib_vx'] == iut_choice].iloc[0], profile)
-        
-        # Affichage résultats
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            # Jauge de probabilité
-            fig = go.Figure(go.Indicator(
-                mode="gauge+number",
-                value=probability,
-                title={'text': "Probabilité d'admission"},
-                gauge={'axis': {'range': [0, 100]},
-                      'bar': {'color': "darkblue"},
-                      'steps': [
-                          {'range': [0, 33], 'color': "lightgray"},
-                          {'range': [33, 66], 'color': "gray"},
-                          {'range': [66, 100], 'color': "darkgray"}
-                      ]}
-            ))
-            st.plotly_chart(fig)
-        
-        with col2:
-            st.metric("Places disponibles", stats['capacite'])
-            st.metric("Places restantes", stats['places_restantes'])
-            st.metric("Taux de pression", f"{stats['taux_pression']} candidats/place")
-            st.metric("Taux d'admission", f"{stats['taux_admission']}%")
-        
-        # Analyse détaillée
-        st.info(f"""
-        **Répartition indicative dans cet IUT :**
-        - Bac général : ~70%
-        - Bac technologique : ~20%
-        - Autres profils : ~10%
-        
-        **Correspondance de votre profil :**
-        - Match type de bac : {stats['profil_match']}%
-        - Boost mention : {stats['mention_boost']}%
-        - Boost boursier : {stats['boursier_boost']}%
+    profile = {
+        'bac_type': bac_type,
+        'mention': mention,
+        'boursier': boursier
+    }
+
+    # Calculate probability using new logic
+    probability, stats = calculate_admission_probability(data[data['g_ea_lib_vx'] == iut_choice].iloc[0], profile)
+    
+    # Affichage résultats
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Jauge de probabilité
+        fig = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=probability,
+            title={'text': "Probabilité d'admission"},
+            gauge={'axis': {'range': [0, 100]},
+                  'bar': {'color': "darkblue"},
+                  'steps': [
+                      {'range': [0, 33], 'color': "lightgray"},
+                      {'range': [33, 66], 'color': "gray"},
+                      {'range': [66, 100], 'color': "darkgray"}
+                  ]}
+        ))
+        st.plotly_chart(fig)
+    
+    with col2:
+        st.metric("Places disponibles", stats['capacite'])
+        st.metric("Places restantes", stats['places_restantes'])
+        st.metric("Taux de pression", f"{stats['taux_pression']} candidats/place")
+        st.metric("Taux d'admission", f"{stats['taux_admission']}%")
+    
+    # Analyse détaillée
+    st.info(f"""
+    **Répartition indicative dans cet IUT :**
+    - Bac général : ~70%
+    - Bac technologique : ~20%
+    - Autres profils : ~10%
+    
+    **Correspondance de votre profil :**
+    - Match type de bac : {stats['profil_match']}%
+    - Boost mention : {stats['mention_boost']}%
+    - Boost boursier : {stats['boursier_boost']}%
+    """)
+
+    # Recommandations
+    if probability >= 75:
+        st.success("✨ Excellentes chances ! Votre profil correspond parfaitement aux critères d'admission.")
+    elif probability >= 50:
+        st.info("📈 Bonnes chances d'admission. Candidature cohérente avec le profil recherché.")
+    else:
+        st.warning("""
+        ⚠️ Admission possible mais plus difficile.
+        - Préparez bien votre lettre de motivation
+        - Mettez en avant vos points forts
         """)
-
-        # Recommandations
-        if probability >= 75:
-            st.success("✨ Excellentes chances ! Votre profil correspond parfaitement aux critères d'admission.")
-        elif probability >= 50:
-            st.info("📈 Bonnes chances d'admission. Candidature cohérente avec le profil recherché.")
-        else:
-            st.warning("""
-            ⚠️ Admission possible mais plus difficile.
-            - Préparez bien votre lettre de motivation
-            - Mettez en avant vos points forts
-            """)
-
-    with tab2:
-        display_global_interface(data)
 
     return iut_choice, probability
 
@@ -307,67 +278,22 @@ def display_global_interface(data):
     )
 
 def main():
-    st.title("Calculateur d'admission BUT Science des données")
-    
-    with st.expander("ℹ️ Comment fonctionne le modèle de prédiction ?"):
-        st.markdown("""
-        ### Modèle de calcul des chances d'admission
-
-        Le calculateur utilise un modèle basé sur les données réelles Parcoursup 2024 qui combine trois facteurs principaux :
-
-        #### 1. Taux de base par type de Bac (facteur principal)
-        - Calculé à partir des statistiques réelles de chaque IUT
-        - Utilise le ratio : `nombre d'admis du même bac / nombre de candidats du même bac`
-        - Prend en compte :
-            * Pour Bac général : `acc_bg / nb_voe_pp_bg`
-            * Pour Bac technologique : `acc_bt / nb_voe_pp_bt`
-            * Pour autres profils : `acc_at / nb_voe_pp_at`
-
-        #### 2. Bonus Mention au Bac
-        Multiplicateur appliqué selon la mention :
-        - Sans mention : ×1.0 (pas de bonus)
-        - Assez Bien : ×1.3 (+30%)
-        - Bien : ×1.6 (+60%)
-        - Très Bien : ×2.0 (+100%)
-
-        #### 3. Bonus Boursier
-        - Bonus minimum de 10% pour tous les boursiers
-        - Bonus supplémentaire basé sur le taux de boursiers admis dans l'IUT
-        - Formule : `1 + max(0.1, taux_boursiers_iut)`
-
-        #### Calcul final
-        ```
-        Chances = Taux_base × Bonus_mention × Bonus_boursier
-        ```
-
-        #### Ajustements
-        - Les chances sont plafonnées à 100%
-        - Un minimum de 1% est garanti si le taux de base est non nul
-        - Prise en compte du taux de conversion proposition → admission
-
-        #### Exemple
-        Pour un candidat avec :
-        - Bac général (taux de base 40%)
-        - Mention Bien (×1.6)
-        - Boursier dans un IUT avec 15% de boursiers (×1.15)
+    """Main function for standalone testing"""
+    if __name__ == "__main__":
+        st.set_page_config(layout="wide", page_title="Calculateur d'admission BUT SD")
         
-        Le calcul serait : `40% × 1.6 × 1.15 = 73.6%`
-
-        #### Fiabilité
-        Les prédictions sont basées sur les données réelles Parcoursup 2024 mais restent indicatives. 
-        De nombreux facteurs qualitatifs (lettre de motivation, parcours spécifique, etc.) ne sont pas pris en compte.
-        """)
-    
-    # Chargement des données
-    df = load_data()
-    if df is not None:
-        tab1, tab2 = st.tabs(["Prédiction détaillée", "Comparaison globale"])
+        # Load data first
+        df = load_data()
         
-        with tab1:
-            display_prediction_interface(df)
-        
-        with tab2:
-            display_global_interface(df)
+        if df is not None:
+            # Create tabs
+            tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
+            
+            with tab1:
+                display_prediction_interface(df, show_title=False)
+            
+            with tab2:
+                display_global_interface(df)
 
 if __name__ == "__main__":
     main()
