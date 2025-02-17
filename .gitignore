@@ -1,13 +1,6 @@
 # Python
 __pycache__/
 *.py[cod]
-<<<<<<< HEAD
-*.so
-.env
-venv/
-*.egg-info/
-=======
-*$py.class
 *.so
 .Python
 env/
@@ -20,7 +13,6 @@ dist/
 .venv
 venv/
 ENV/
->>>>>>> bd5a72940f5e2fcb7353dcf3b99dede83f0da0cf
 
 # IDE
 .vscode/
@@ -35,20 +27,6 @@ ENV/
 Thumbs.db
 *.db
 
-<<<<<<< HEAD
-# Private or local
-butsd.code-workspace
-.streamlit/secrets.toml
-
-# Ne pas ignorer ces dossiers et fichiers essentiels
-!.streamlit/
-!.streamlit/config.toml
-!.assets/
-!.data/
-!.data/parcoursup.json
-!.assets/photo.jpg
-!.assets/lettre_recommandation.jpg
-=======
 # Project specific
 .streamlit/secrets.toml
 *.log
@@ -57,5 +35,5 @@ butsd.code-workspace
 # Ne PAS ignorer ces dossiers essentiels
 !.assets/
 !.data/
+!.streamlit/
 !.streamlit/config.toml
->>>>>>> bd5a72940f5e2fcb7353dcf3b99dede83f0da0cf
