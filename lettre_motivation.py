@@ -5,25 +5,35 @@ from pathlib import Path
 import json
 import pandas as pd
 
+# Définition du chemin racine du projet
+project_root = Path(__file__).parent
+
 # Import des composants essentiels uniquement
-from components.theme import toggle_theme
+from components.theme import apply_dark_theme
 from components.quiz import display_quiz
 from components.presentation import display_presentation
 from components.projet_gaming import display_project_concept
+from components.floating_chat import add_floating_chat_to_app  # Changé generate_response pour add_floating_chat_to_app
 from components.matrix_animation import display_matrix_animation
-from components.admission_prediction import display_prediction_interface  # Au lieu de parcoursup_analysis
+from components.admission_prediction import display_prediction_interface
 from content.lettre_motivation_content import get_lettre_motivation_content, get_note_importante
+from components.admission_prediction import (
+    load_data, 
+    display_summary_stats,
+    display_prediction_interface,
+    display_global_interface
+)
 
 def load_css():
     """Charge les fichiers CSS"""
     css_files = ['main.css', 'layout.css', 'typography.css', 'components.css', 'sidebar.css']
     for css_file in css_files:
-        css_path = Path(__file__).parent / "styles" / css_file
+        css_path = Path(project_root) / "styles" / css_file
         try:
-            with open(css_path, 'r', encoding='utf-8') as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+            css_content = css_path.read_text()
+            st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
         except Exception as e:
-            print(f"Erreur CSS {css_file}: {e}")
+            print(f"Erreur lors du chargement de {css_file}: {e}")
 
 def write_text_slowly(text):
     """Fonction pour l'effet machine à écrire"""
@@ -41,20 +51,20 @@ def main():
     )
     
     load_css()
+    apply_dark_theme()  # Appliquer le thème sombre directement
     
-    # Animation initiale simple
-    if not st.session_state.get('init'):
+    # Animation state management
+    if 'matrix_done' not in st.session_state:
+        st.session_state.matrix_done = False
+    
+    # Matrix animation at startup
+    if not st.session_state.matrix_done:
         display_matrix_animation()
-        st.session_state.init = True
-        time.sleep(1)
+        st.session_state.matrix_done = True
         st.rerun()
 
     # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
-        col1, col2 = st.columns([4, 1])
-        with col2:
-            toggle_theme()
-        
         st.title("🎯 Navigation")
         
         # Menu de navigation
@@ -82,13 +92,7 @@ def main():
             print(f"Erreur lors du chargement de la lettre: {str(e)}")
             st.error("Lettre de recommandation non disponible")
 
-        # Disclaimer après la lettre
-        st.info("""
-        ⚠️ **Disclaimer:**
-        Cette application a été entièrement conçue et développée par mes soins. 
-        Aucun template n'a été utilisé.
-        
-        Les idées, le design et le code sont originaux, réalisés avec l'assistance d'outils d'IA comme GitHub Copilot et Claude.""")
+        st.markdown("---")
         
         # Formations en dernier
         st.success("""
@@ -164,6 +168,9 @@ def main():
         
         st.markdown("---")
         
+        # Ajout du chat
+        add_floating_chat_to_app()  # Appel correct de la fonction
+        
         # Points clés
         col1, col2 = st.columns(2)
         with col1:
@@ -236,22 +243,80 @@ def main():
         display_quiz()
         
     elif selection == "📊 Data Parcoursup":
-        st.markdown("""
-            <h1 style="
-                font-size: 2.5em;
-                margin: 0;
-                padding: 0;
-                color: inherit;
-            ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
-        """, unsafe_allow_html=True)
-        
-        # Charger les données avant d'appeler la fonction
         try:
-            data_path = Path(__file__).parent / ".data" / "parcoursup.json"
-            with open(data_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                df = pd.DataFrame(data['results'])
-            display_prediction_interface(df, show_title=False)
+            df = load_data()
+            
+            if df is not None:
+                # 1. Title
+                st.markdown("""
+                    <h1 style='margin-bottom: 2rem;'>
+                        📊 Analyse des données Parcoursup 2024 - BUT Science des données
+                    </h1>
+                """, unsafe_allow_html=True)
+                
+                # 2. Display summary stats
+                display_summary_stats(df)
+                
+                # 3. Show expander
+                with st.expander("ℹ️ Comment fonctionne le modèle de prédiction ?"):
+                    st.markdown("""
+                    ### Modèle de calcul des chances d'admission
+
+                    Le calculateur utilise un modèle basé sur les données réelles Parcoursup 2024 qui combine trois facteurs principaux :
+
+                    #### 1. Taux de base par type de Bac (facteur principal)
+                    - Calculé à partir des statistiques réelles de chaque IUT
+                    - Utilise le ratio : `nombre d'admis du même bac / nombre de candidats du même bac`
+                    - Prend en compte :
+                        * Pour Bac général : `acc_bg / nb_voe_pp_bg`
+                        * Pour Bac technologique : `acc_bt / nb_voe_pp_bt`
+                        * Pour autres profils : `acc_at / nb_voe_pp_at`
+
+                    #### 2. Bonus Mention au Bac
+                    Multiplicateur appliqué selon la mention :
+                    - Sans mention : ×1.0 (pas de bonus)
+                    - Assez Bien : ×1.3 (+30%)
+                    - Bien : ×1.6 (+60%)
+                    - Très Bien : ×2.0 (+100%)
+
+                    #### 3. Bonus Boursier
+                    - Bonus minimum de 10% pour tous les boursiers
+                    - Bonus supplémentaire basé sur le taux de boursiers admis dans l'IUT
+                    - Formule : `1 + max(0.1, taux_boursiers_iut)`
+
+                    #### Calcul final
+                    ```
+                    Chances = Taux_base × Bonus_mention × Bonus_boursier
+                    ```
+
+                    #### Ajustements
+                    - Les chances sont plafonnées à 100%
+                    - Un minimum de 1% est garanti si le taux de base est non nul
+                    - Prise en compte du taux de conversion proposition → admission
+
+                    #### Exemple
+                    Pour un candidat avec :
+                    - Bac général (taux de base 40%)
+                    - Mention Bien (×1.6)
+                    - Boursier dans un IUT avec 15% de boursiers (×1.15)
+                    
+                    Le calcul serait : `40% × 1.6 × 1.15 = 73.6%`
+
+                    #### Fiabilité
+                    Les prédictions sont basées sur les données réelles Parcoursup 2024 mais restent indicatives. 
+                    De nombreux facteurs qualitatifs (lettre de motivation, parcours spécifique, etc.) ne sont pas pris en compte.
+                    """)
+                
+                # 4. Add tabs for prediction models
+                tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
+                
+                with tab1:
+                    st.markdown("### Prédiction personnalisée")
+                    display_prediction_interface(df, show_title=False)
+                
+                with tab2:
+                    display_global_interface(df)
+                    
         except Exception as e:
             st.error(f"Erreur lors du chargement des données: {str(e)}")
             print(f"Erreur détaillée: {e}")
