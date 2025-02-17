@@ -37,3 +37,9 @@ butsd.code-workspace
 !.data/
 !.streamlit/
 !.streamlit/config.toml
+
+# Additional
+.streamlit/
+__pycache__/
+*.pyc
+venv/
