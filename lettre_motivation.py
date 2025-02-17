@@ -71,10 +71,10 @@ def main():
         selection = st.radio(
             "",
             ["🏠 Accueil",
-             "✨ Quiz",
+             "📊 Data Project",
              "🔧 Projet",
-             "👤 Présentation",
-             "📊 Data Parcoursup"]
+             "✨ Quiz",
+             "👤 Présentation",]
         )
         st.session_state.selection = selection
         
@@ -242,7 +242,7 @@ def main():
         """, unsafe_allow_html=True)
         display_quiz()
         
-    elif selection == "📊 Data Parcoursup":
+    elif selection == "📊 Data Project":
         try:
             df = load_data()
             
