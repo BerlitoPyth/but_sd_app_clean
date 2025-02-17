@@ -42,25 +42,6 @@ h2 {
     scroll-margin-top: 80px;
 }
 
-/* Sidebar Styles */
-.sidebar .block-container {
-    padding-top: 0.5rem !important;
-    gap: 0.5rem !important;
-}
-
-.sidebar h1 {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-}
-
-.sidebar hr {
-    margin: 0.5rem 0 !important;
-}
-
-.sidebar .element-container {
-    margin-bottom: 0.5rem !important;
-}
-
 /* Navigation */
 .stRadio {
     margin-top: 0 !important;
@@ -86,30 +67,21 @@ h2 {
     border-radius: 0.5rem;
 }
 
+/* Supprimons les styles de boutons en conflit */
 .stButton > button {
     width: 100%;
-}
-
-/* Styles spécifiques pour les boutons */
-.stButton > button {
-    background-color: #00FF41 !important;
-    color: #000000 !important;
-    border: 2px solid #00FF41 !important;
-    transition: all 0.3s ease !important;
-}
-
-.stButton > button:hover {
-    background-color: #111111 !important;
-    color: #00FF41 !important;
-    border-color: #00FF41 !important;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border-radius: 8px;
 }
 
 /* Style pour les widgets */
 .stSelectbox > div > div, 
 .stMultiSelect > div > div {
-    background-color: #0E1117 !important;
+    background-color: #1E293B !important;
     color: #FFFFFF !important;
-    border-color: #00FF41 !important;
+    border-color: #334155 !important;
+    border-radius: 8px !important;
 }
 
 /* Style pour les onglets */
@@ -118,15 +90,15 @@ h2 {
 }
 
 .stTabs [data-baseweb="tab-list"] {
-    background-color: #0E1117 !important;
-    border-color: #00FF41 !important;
+    background-color: #0F172A !important;
+    border-color: #334155 !important;
 }
 
 /* Style pour les cartes metrics */
 [data-testid="stMetric"] {
-    background-color: #0E1117 !important;
+    background-color: #1E293B !important;
     color: #FFFFFF !important;
-    border: 1px solid #00FF41 !important;
+    border: 1px solid #334155 !important;
     padding: 1rem !important;
     border-radius: 0.5rem !important;
 }
@@ -190,4 +162,33 @@ div[data-testid="column"]:has(button:contains("Thème")) {
 .stElementContainer:has(.stHeading) {
     margin: 0 !important;
     padding: 0 !important;
+}
+
+/* Chat styles */
+.user-message {
+    text-align: right;
+    color: #FFFFFF !important;
+    background-color: #1E293B !important;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    border: 1px solid #334155 !important;
+}
+
+.bot-message {
+    text-align: left;
+    color: #FFFFFF !important;
+    background-color: #0F172A !important;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 5px 0;
+    border: 1px solid #1E293B !important;
+}
+
+/* Chat input */
+.stTextInput input {
+    color: #FFFFFF !important;
+    background-color: #1E293B !important;
+    border-color: #334155 !important;
+    border-radius: 8px !important;
 }

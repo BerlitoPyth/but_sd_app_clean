@@ -1,4 +1,4 @@
-/* Composants UI */
+/* Composants UI - sans les styles de couleur */
 .stButton > button {
     width: 100%;
 }
@@ -10,12 +10,6 @@
 .stImage:hover {
     transform: scale(1.02);
     cursor: pointer;
-}
-
-.thumbnail-container {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 5px;
 }
 
 .section-title {
