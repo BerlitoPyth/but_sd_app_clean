@@ -1,69 +1,29 @@
 import streamlit as st
 import time
 from PIL import Image
-import random
-import sys
+from pathlib import Path
 import json
 import pandas as pd
-import os  # Ajout ici
-from pathlib import Path  # Déjà présent mais déplacé ici
 
-# Définir les chemins de manière plus robuste
-ROOT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
-ASSETS_PATH = ROOT_DIR / ".assets"
-DATA_PATH = ROOT_DIR / ".data"
-
-# Ajout du chemin absolu au PYTHONPATH
-file_path = Path(__file__).resolve()
-project_root = file_path.parent
-sys.path.append(str(project_root))
-
-# Modification des chemins pour les assets et data
-ASSETS_PATH = project_root / ".assets"
-DATA_PATH = project_root / ".data"
-
-# S'assurer que les dossiers existent
-ASSETS_PATH.mkdir(exist_ok=True)
-DATA_PATH.mkdir(exist_ok=True)
-
-# Import des composants après l'ajout du chemin
-try:
-    from components.theme import toggle_theme  # Import direct de la fonction
-    from components.quiz import display_quiz   # Import direct de la fonction
-    from components.presentation import display_presentation
-    from components.floating_chat import add_floating_chat_to_app
-    from components.projet_gaming import display_project_concept
-    from components.matrix_animation import display_matrix_animation
-    from components.admission_prediction import display_prediction_interface  # Un seul composant Parcoursup
-    print("Imports des composants réussis")
-except ImportError as e:
-    print(f"Erreur d'import: {e}")
-    sys.exit(1)
-
-# Import du contenu
+# Import des composants essentiels uniquement
+from components.theme import toggle_theme
+from components.quiz import display_quiz
+from components.presentation import display_presentation
+from components.projet_gaming import display_project_concept
+from components.matrix_animation import display_matrix_animation
+from components.admission_prediction import display_prediction_interface  # Au lieu de parcoursup_analysis
 from content.lettre_motivation_content import get_lettre_motivation_content, get_note_importante
 
-# Au début du fichier, après les imports
-if 'animation_shown' not in st.session_state:
-    st.session_state.animation_shown = False
-
-if 'intro_shown' not in st.session_state:
-    st.session_state.intro_shown = False
-
-def scroll_to_section(title_id):
-    js = f'''
-    <script>
-        function scrollToTitle() {{
-            const title = document.getElementById("{title_id}");
-            if (title) {{
-                title.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
-            }}
-        }}
-        // Exécuter après un court délai pour s'assurer que le DOM est chargé
-        setTimeout(scrollToTitle, 100);
-    </script>
-    '''
-    st.markdown(js, unsafe_allow_html=True)
+def load_css():
+    """Charge les fichiers CSS"""
+    css_files = ['main.css', 'layout.css', 'typography.css', 'components.css', 'sidebar.css']
+    for css_file in css_files:
+        css_path = Path(__file__).parent / "styles" / css_file
+        try:
+            with open(css_path, 'r', encoding='utf-8') as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        except Exception as e:
+            print(f"Erreur CSS {css_file}: {e}")
 
 def write_text_slowly(text):
     """Fonction pour l'effet machine à écrire"""
@@ -73,73 +33,21 @@ def write_text_slowly(text):
         time.sleep(0.03)
     placeholder.markdown(f"### {text}")
 
-def load_css():
-    """Charge les fichiers CSS"""
-    css_files = ['main.css', 'layout.css', 'typography.css', 'components.css', 'sidebar.css']
-    for css_file in css_files:
-        css_path = Path(project_root) / "styles" / css_file
-        try:
-            css_content = css_path.read_text()
-            st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
-        except Exception as e:
-            print(f"Erreur lors du chargement de {css_file}: {e}")
-
-def get_image_base64(image_path):
-    """Convert image to base64 string with path handling"""
-    import base64
-    try:
-        image_full_path = ASSETS_PATH / Path(image_path).name
-        with open(image_full_path, "rb") as image_file:
-            return base64.b64encode(image_file.read()).decode()
-    except Exception as e:
-        print(f"Erreur de chargement image: {e}")
-        return ""
-def load_parcoursup_data():
-    try:
-        # Utiliser os.path.join pour plus de compatibilité
-        data_path = os.path.join(DATA_PATH, "parcoursup.json")
-        if os.path.exists(data_path):
-            with open(data_path, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                return pd.DataFrame(data['results'])
-        else:
-            raise FileNotFoundError(f"Fichier non trouvé: {data_path}")
-    except Exception as e:
-        print(f"Erreur de chargement: {str(e)}")
-        return None
 def main():
-    # Configuration de base
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide",
         initial_sidebar_state="expanded"
     )
     
-    # Gestion simple des states
-    if 'animation_shown' not in st.session_state:
-        st.session_state.animation_shown = False
-    
-    # CSS en premier
     load_css()
     
-    # Uniquement l'animation matrix au démarrage
-    if not st.session_state.animation_shown:
+    # Animation initiale simple
+    if not st.session_state.get('init'):
         display_matrix_animation()
-        st.session_state.animation_shown = True
+        st.session_state.init = True
         time.sleep(1)
         st.rerun()
-        return
-
-    try:
-        # Chargement des données Parcoursup une seule fois
-        if 'parcoursup_data' not in st.session_state:
-            with open(DATA_PATH / "parcoursup.json", 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                st.session_state.parcoursup_data = pd.DataFrame(data['results'])
-        st.session_state.data_loaded = True
-    except Exception as e:
-        print(f"Erreur chargement données: {e}")
-        st.error("Erreur lors du chargement des données")
 
     # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
@@ -173,6 +81,14 @@ def main():
         except Exception as e:
             print(f"Erreur lors du chargement de la lettre: {str(e)}")
             st.error("Lettre de recommandation non disponible")
+
+        # Disclaimer après la lettre
+        st.info("""
+        ⚠️ **Disclaimer:**
+        Cette application a été entièrement conçue et développée par mes soins. 
+        Aucun template n'a été utilisé.
+        
+        Les idées, le design et le code sont originaux, réalisés avec l'assistance d'outils d'IA comme GitHub Copilot et Claude.""")
         
         # Formations en dernier
         st.success("""
@@ -198,90 +114,61 @@ def main():
                     st.image(lettre, use_container_width=True)
                     if st.button("❌ Fermer", key="close_fullscreen"):
                         st.session_state.lettre_agrandie = False
-                        st.rerun()  # Changé de st.experimental_rerun() à st.rerun()
+                        st.rerun()
                 except Exception as e:
                     st.error("Impossible d'afficher la lettre en plein écran")
                     print(f"Erreur: {e}")
 
     # Contenu principal basé sur la sélection
     if selection == "🏠 Accueil":
-        # Style mise à jour
-        st.markdown("""
-            <style>
-            .header-content {
-                display: flex;
-                align-items: center;
-                gap: 2rem;
-                padding: 1rem 2rem;
-                width: 100%;
-            }
-            
-            .photo-container {
-                flex-shrink: 0;
-                width: 150px;  /* Augmenté de 100px à 150px */
-                height: 150px; /* Augmenté de 100px à 150px */
-            }
-            
-            .photo-container img {
-                width: 150px;  /* Augmenté de 100px à 150px */
-                height: 150px; /* Augmenté de 100px à 150px */
-                object-fit: cover;
-            }
-            
-            .text-content {
-                flex-grow: 1;
-            }
-            
-            .title-text {
-                font-size: 2em !important;
-                margin: 0 !important;
-                line-height: 1.1;
-                color: inherit;
-                font-weight: bold;
-            }
-            
-            .subtitle-text {
-                font-size: 1.3em !important;
-                margin: 0.2rem 0 !important;
-                color: inherit;
-                font-weight: 500;
-            }
-            
-            .motto-text {
-                font-style: italic;
-                font-size: 1em;
-                margin: 0.2rem 0 !important;
-            }
-            </style>
-        """, unsafe_allow_html=True)
-
-        # Header avec nouvelle structure
-        header_html = f"""
-            <div class="page-header">
-                <div class="header-content">
-                    <div class="photo-container">
-                        <img src="data:image/jpg;base64,{get_image_base64(".assets/photo.jpg")}" 
-                             width="150" style="transform: rotate(0deg);">  <!-- Augmenté à 150 -->
-                    </div>
-                    <div class="text-content">
-                        <h1 class="title-text">Candidature BUT Science des Données</h1>
-                        <h2 class="subtitle-text">Adrien BERLIAT</h2>
-                        <p class="motto-text">De la profondeur des océans à la profondeur des données... 🌊➡️📊</p>
-                    </div>
+        # Création d'un container pour le titre et la photo
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("""
+                <div style="margin: 0;">
+                    <h1 style="
+                        font-size: 2.5em;
+                        margin: 0 0 0.5rem 0;
+                        color: inherit;
+                    ">Candidature BUT Science des Données</h1>
+                    <h2 style="
+                        font-size: 1.5em;
+                        margin: 0 0 1rem 0;
+                        color: inherit;
+                    ">Adrien BERLIAT</h2>
                 </div>
-            </div>
-        """
-        st.markdown(header_html, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+            
+            # Effet machine à écrire
+            if 'title_written' not in st.session_state:
+                write_text_slowly("De la profondeur des océans à la profondeur des données... 🌊➡️📊")
+                st.session_state.title_written = True
+            else:
+                st.markdown("""
+                    <h3 style="
+                        font-style: italic;
+                        color: inherit;
+                        font-size: 1.2em;
+                        margin: 0 0 2rem 0;
+                    ">De la profondeur des océans à la profondeur des données... 🌊➡️📊</h3>
+                """, unsafe_allow_html=True)
 
-        # Contenu avec marges
-        st.markdown('<div class="content-section">', unsafe_allow_html=True)
+        with col2:
+            try:
+                image = Image.open(".assets/photo.jpg")
+                image_rotated = image.rotate(0, expand=True)
+                st.image(image_rotated, width=200)
+            except Exception as e:
+                st.info("📸 Photo non disponible")
+                print(f"Erreur: {e}")
+        
+        st.markdown("---")
         
         # Points clés
-        st.markdown('<div class="points-container">', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.success("""
-            #### Points Clés
+            ### ✨ Points Clés
             - 📊 Goût pour les mathématiques
             - 🤝 Expérience du travail d'équipe
             - 💡 Autodidacte
@@ -289,30 +176,31 @@ def main():
             """)
         with col2:
             st.info("""
-            #### Formation Actuelle
+            ### 🎓 Formation Actuelle
             - 📚 DAEU B en cours
             - 💻 Certifications Python
             - 🔍 École 42 - La Piscine
             - 🌟 Excellents résultats en sciences
             """)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        # Chat
-        add_floating_chat_to_app()
-        
+            
         st.markdown("---")
         
-        # Lettre de motivation
+        # Titre de la lettre de motivation avec icône
         st.markdown("""
-            <h2 style="display: flex; align-items: center; gap: 0.5rem;">
+            <h2 style="
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 1rem 0;
+                line-height: 1.2;
+            ">
                 📜 Ma Lettre de Motivation
             </h2>
         """, unsafe_allow_html=True)
         
+        # Contenu de la lettre et note
         st.markdown(get_lettre_motivation_content())
         st.markdown(get_note_importante(), unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)  # Fermeture du content-section
 
     elif selection == "👤 Présentation":
         st.markdown("""
@@ -357,16 +245,16 @@ def main():
             ">📊 Analyse des données Parcoursup 2024 - BUT Science des données</h1>
         """, unsafe_allow_html=True)
         
-        # Dans la section Data Parcoursup, simplifie le chargement
+        # Charger les données avant d'appeler la fonction
         try:
-            data_path = DATA_PATH / "parcoursup.json"
+            data_path = Path(__file__).parent / ".data" / "parcoursup.json"
             with open(data_path, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 df = pd.DataFrame(data['results'])
             display_prediction_interface(df, show_title=False)
         except Exception as e:
-            st.error("Erreur lors du chargement des données")
-            print(f"Erreur: {e}")
+            st.error(f"Erreur lors du chargement des données: {str(e)}")
+            print(f"Erreur détaillée: {e}")
     
     # Footer
     st.markdown("---")
