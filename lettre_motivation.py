@@ -132,12 +132,13 @@ def main():
                 <div style="margin: 0;">
                     <h1 style="
                         font-size: 2.5em;
-                        margin: 0 0 0.5rem 0;
+                        margin: -0.5rem 0 0.25rem 0;
                         color: inherit;
+                        padding: 0;
                     ">Candidature BUT Science des Données</h1>
                     <h2 style="
                         font-size: 1.5em;
-                        margin: 0 0 1rem 0;
+                        margin: 0 0 0.5rem 0;
                         color: inherit;
                     ">Adrien BERLIAT</h2>
                 </div>
@@ -165,9 +166,7 @@ def main():
             except Exception as e:
                 st.info("📸 Photo non disponible")
                 print(f"Erreur: {e}")
-        
-        st.markdown("---")
-        
+                
         # Ajout du chat
         add_floating_chat_to_app()  # Appel correct de la fonction
         
@@ -210,17 +209,9 @@ def main():
         st.markdown(get_note_importante(), unsafe_allow_html=True)
 
     elif selection == "👤 Présentation":
-        st.markdown("""
-            <h1 style="
-                font-size: 2.5em;
-                margin: 0;
-                padding: 0;
-                color: inherit;
-            ">Qui suis-je ?</h1>
-        """, unsafe_allow_html=True)
+
         display_presentation(show_title=False)  # Nouveau paramètre pour éviter le doublon
 
-        st.markdown("---")
         
     elif selection == "🔧 Projet":
         st.markdown("""

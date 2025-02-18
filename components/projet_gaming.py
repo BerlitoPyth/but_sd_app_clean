@@ -14,10 +14,7 @@ def display_project_concept(show_title=True):
                 margin-bottom: 1.5rem !important;
             ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
         """, unsafe_allow_html=True)
-    
-    # Add a separator after the main title
-    st.markdown("---")
-    
+        
     # Genèse du projet
     st.header("💡 Genèse du Projet")
     with st.expander("Découvrir l'origine du projet", expanded=True):

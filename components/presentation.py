@@ -1,20 +1,38 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from pathlib import Path
 
 def display_presentation(show_title=True):
-    """
-    Affiche la présentation
-    :param show_title: Boolean pour contrôler l'affichage du titre
-    """
-    if show_title:
-        st.markdown("""
-            <h1 style="
-                margin-top: 0 !important;
-                padding-top: 0 !important;
-                margin-bottom: 1.5rem !important;
-            ">Qui suis-je ?</h1>
-        """, unsafe_allow_html=True)
-    
+    """Affiche la présentation avec photo"""
+    try:
+        # Get absolute path to image
+        image_path = Path(__file__).parent.parent.resolve() / ".assets" / "profile.jpg"
+        
+        # Create columns for title and photo
+        col1, col2 = st.columns([2, 1])
+        
+        # Display title in first column
+        with col1:
+            st.markdown("""
+                <h1 style='
+                    color: white;
+                    font-size: 2rem;
+                    margin-top: 1rem;
+                    margin-bottom: 1rem;
+                '>👋 Bienvenue, découvrez-en plus sur moi !</h1>
+            """, unsafe_allow_html=True)
+        
+        # Display image in second column
+        with col2:
+            st.image(
+                str(image_path),
+                width=200,
+                use_container_width=False
+            )
+    except Exception as e:
+        st.error(f"Erreur lors du chargement de l'image: {str(e)}")
+        print(f"Full error details: {e}")
+
     presentation_html = """
     <!DOCTYPE html>
     <html>
@@ -151,6 +169,28 @@ def display_presentation(show_title=True):
             .animate-slide {
                 animation: slideIn 0.5s ease-out forwards;
             }
+
+            .profile-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 2rem;
+                gap: 2rem;
+            }
+
+            .profile-image {
+                width: 200px;
+                height: 200px;
+                border-radius: 12px;
+                object-fit: cover;
+                border: 2px solid rgba(96, 165, 250, 0.3);
+                transition: transform 0.3s ease, border-color 0.3s ease;
+            }
+
+            .profile-image:hover {
+                transform: scale(1.02);
+                border-color: rgba(96, 165, 250, 0.6);
+            }
         </style>
     </head>
     <body>
@@ -161,7 +201,7 @@ def display_presentation(show_title=True):
                     icon: "👤",
                     title: "À propos de moi",
                     items: [
-                        "25 ans, originaire du Sud de la France (Perpignan)",
+                        "25 ans, originaire du Sud de la France (Saint-Cyprien-66)",
                         "Passionné de technologie et d'innovation",
                         "Amateur de musique classique, particulièrement le piano",
                         "Sportif et ancien champion de pentathlon"

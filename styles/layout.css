@@ -1,16 +1,61 @@
 /* Layout et conteneurs */
 .block-container {
-    padding-top: 1rem !important;
+    padding-top: 0 !important;  /* Réduit à 0 */
     max-width: 100% !important;
     padding-left: 5% !important;
     padding-right: 5% !important;
+    margin: 0 !important;
+    gap: 0 !important;
 }
 
+/* Ajustements globaux des titres */
 .main > div:first-child h1:first-of-type {
-    margin-top: 0 !important;
-    padding-top: 1rem !important;
-    margin-bottom: 2rem !important;
+    margin-top: -2rem !important;  /* Plus négatif pour remonter */
+    padding-top: 0 !important;
+    margin-bottom: 0.5rem !important;
     scroll-margin-top: 0 !important;
+}
+
+/* Ajout des styles globaux pour tous les titres */
+h1 {
+    margin-top: -2rem !important;  /* Plus négatif pour remonter */
+    margin-bottom: 0.5rem !important;
+    padding-top: 0 !important;
+}
+
+h2 {
+    margin-top: 0 !important;  /* Réduit à 0 */
+    margin-bottom: 0.5rem !important;
+}
+
+h3 {
+    margin-top: 0 !important;  /* Réduit à 0 */
+    margin-bottom: 0.5rem !important;
+}
+
+/* Optimisation des espacements */
+.st-emotion-cache-1v0mbdj {
+    gap: 0.5rem !important;  /* Réduit à 0.5rem */
+}
+
+.st-emotion-cache-16txtl3 {
+    padding-top: 0 !important;
+}
+
+/* Ajustement des marges pour les conteneurs */
+.element-container {
+    margin-top: 0 !important;
+    margin-bottom: 0.25rem !important;  /* Réduit à 0.25rem */
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Réduction drastique des espaces entre les sections */
+.stMarkdown {
+    margin-top: -1rem !important;  /* Plus négatif */
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
 }
 
 .highlight {
@@ -47,4 +92,34 @@
         width: 100% !important;
         margin-left: 0 !important;
     }
+}
+
+/* Remove redundant containers spacing */
+.stElementContainer, 
+.element-container,
+.st-emotion-cache-133qyib,
+.e6rk8up1 {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Clean up markdown containers */
+.stMarkdown,
+.st-emotion-cache-1t3mybo,
+.egexzqm0 {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+/* Remove extra space from headings */
+.stHeading {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Clean up radio buttons spacing */
+.stRadio {
+    margin: 0 !important;
+    padding: 0 !important;
 }

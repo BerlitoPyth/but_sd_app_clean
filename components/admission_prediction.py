@@ -144,8 +144,6 @@ def display_summary_stats(data):
 
 def display_prediction_interface(data, show_title=True):
     """Interface de prédiction des chances d'admission"""
-    # Remove stats and title display from here since they're handled in main app
-    
     # Selection interface
     col1, col2 = st.columns(2)
     
@@ -163,8 +161,11 @@ def display_prediction_interface(data, show_title=True):
         'boursier': boursier
     }
 
+    # Get IUT data first
+    iut_data = data[data['g_ea_lib_vx'] == iut_choice].iloc[0]
+    
     # Calculate probability using new logic
-    probability, stats = calculate_admission_probability(data[data['g_ea_lib_vx'] == iut_choice].iloc[0], profile)
+    probability, stats = calculate_admission_probability(iut_data, profile)
     
     # Affichage résultats
     col1, col2 = st.columns(2)
@@ -192,29 +193,127 @@ def display_prediction_interface(data, show_title=True):
         st.metric("Taux d'admission", f"{stats['taux_admission']}%")
     
     # Analyse détaillée
-    st.info(f"""
-    **Répartition indicative dans cet IUT :**
-    - Bac général : ~70%
-    - Bac technologique : ~20%
-    - Autres profils : ~10%
+    st.markdown("""
+    <div style='background-color: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0;'>
+        <h3 style='color: white; margin-top: 0;'>📊 Analyse détaillée de votre candidature</h3>
+    </div>
+    """, unsafe_allow_html=True)
     
-    **Correspondance de votre profil :**
-    - Match type de bac : {stats['profil_match']}%
-    - Boost mention : {stats['mention_boost']}%
-    - Boost boursier : {stats['boursier_boost']}%
-    """)
-
-    # Recommandations
-    if probability >= 75:
-        st.success("✨ Excellentes chances ! Votre profil correspond parfaitement aux critères d'admission.")
-    elif probability >= 50:
-        st.info("📈 Bonnes chances d'admission. Candidature cohérente avec le profil recherché.")
-    else:
-        st.warning("""
-        ⚠️ Admission possible mais plus difficile.
-        - Préparez bien votre lettre de motivation
-        - Mettez en avant vos points forts
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        # Calculate percentage distributions
+        total_admis = iut_data['acc_bg'] + iut_data['acc_bt'] + iut_data['acc_at']
+        pct_bg = round((iut_data['acc_bg'] / total_admis * 100), 1) if total_admis > 0 else 0
+        pct_bt = round((iut_data['acc_bt'] / total_admis * 100), 1) if total_admis > 0 else 0
+        pct_at = round((iut_data['acc_at'] / total_admis * 100), 1) if total_admis > 0 else 0
+        
+        st.markdown(f"""
+        #### 📈 Statistiques de l'établissement
+        - **Répartition des admis :**
+          * Bac général : {pct_bg}%
+          * Bac technologique : {pct_bt}%
+          * Autres profils : {pct_at}%
+        
+        - **Profil des candidats :**
+          * Taux de boursiers : {iut_data['pct_bours']}%
+          * Taux de pression : {stats['taux_pression']} candidats/place
         """)
+    
+    with col2:
+        st.markdown(f"""
+        #### 🎯 Adéquation de votre profil
+        - **Match type de bac :** {stats['profil_match']}%
+          * {'✅ Profil recherché' if stats['profil_match'] > 50 else '⚠️ Profil moins représenté'}
+        
+        - **Bonus acquis :**
+          * Mention : +{stats['mention_boost']}%
+          * Boursier : +{stats['boursier_boost']}%
+        """)
+
+    # Recommandations personnalisées
+    st.markdown("<h3 style='color: white; margin-top: 20px;'>🎓 Conseils personnalisés</h3>", unsafe_allow_html=True)
+    
+    # Calcul du taux moyen d'admission pour contextualiser
+    taux_admission_moyen = (iut_data['acc_tot'] / iut_data['voe_tot']) * 100
+    
+    if probability >= 30:  # Top 15% des candidats
+        st.success(f"""
+        ### ✨ Profil très compétitif (Top 15%)
+        
+        **Contexte de sélection :**
+        - Taux d'admission moyen : {taux_admission_moyen:.1f}%
+        - Formation très sélective : {iut_data['capa_fin']} places pour {iut_data['voe_tot']} candidats
+        
+        **Points forts de votre dossier :**
+        - Votre profil correspond aux critères principaux
+        - Vos chances sont supérieures à la moyenne
+        
+        **Actions prioritaires :**
+        1. Préparez un dossier d'excellence :
+           * CV détaillé de vos projets et compétences
+           * Lettre de motivation ciblée pour chaque IUT
+           * Portfolio de vos réalisations techniques
+        
+        2. Anticipez la formation :
+           * Initiez-vous à Python (certifications à l'appui)
+           * Renforcez vos bases en mathématiques
+           * Suivez des cours en ligne de statistiques
+        """)
+    elif probability >= 15:  # Dans la moyenne haute
+        st.info(f"""
+        ### 📊 Candidature compétitive
+        
+        **Contexte important :**
+        - Taux d'admission : {taux_admission_moyen:.1f}%
+        - Places disponibles : {iut_data['capa_fin']}
+        - Candidats : {iut_data['voe_tot']}
+        
+        **Stratégie recommandée :**
+        1. Renforcez votre dossier :
+           * Développez des projets personnels (programmation/data)
+           * Obtenez des certifications en ligne
+           * Documentez toutes vos réalisations
+        
+        2. Optimisez vos chances :
+           * Candidatez dans plusieurs IUT
+           * Adaptez votre lettre pour chaque établissement
+           * Préparez-vous aux éventuels entretiens
+        """)
+    else:  # Chances plus faibles
+        st.warning(f"""
+        ### ⚠️ Contexte très sélectif
+        
+        **Statistiques clés :**
+        - Taux d'admission : {taux_admission_moyen:.1f}%
+        - {iut_data['capa_fin']} places pour {iut_data['voe_tot']} candidats
+        - Taux de pression : {stats['taux_pression']} candidats/place
+        
+        **Plan d'action recommandé :**
+        1. Développez votre profil technique :
+           * Suivez des cours de programmation (Python)
+           * Initiez-vous aux statistiques et à l'analyse de données
+           * Créez un portfolio de projets personnels
+        
+        2. Stratégie de candidature :
+           * Visez plusieurs IUT avec des profils différents
+           * Préparez des alternatives (BTS SIO, BUT Info...)
+           * Considérez une année préparatoire si nécessaire
+        
+        3. Maximisez vos atouts :
+           * Mettez en avant votre motivation et votre potentiel
+           * Démontrez votre capacité d'apprentissage
+           * Valorisez toute expérience pertinente
+        """)
+
+    # Note sur la sélectivité générale
+    st.info("""
+    💡 **Comprendre la sélectivité :**
+    - Le BUT SD est parmi les formations les plus sélectives de Parcoursup
+    - Taux d'admission moyen national : 7.2%
+    - Même les excellents dossiers doivent se démarquer
+    - La motivation et la préparation technique sont déterminantes
+    """)
 
     return iut_choice, probability
 

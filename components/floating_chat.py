@@ -172,9 +172,7 @@ def add_floating_chat_to_app():
         }
         </style>
     """, unsafe_allow_html=True)
-    
-    st.markdown("### 💬 Posez vos questions sur ma candidature")
-    
+        
     # Initialize session state first
     if "messages" not in st.session_state:
         st.session_state.messages = []

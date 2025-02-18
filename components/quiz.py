@@ -20,7 +20,7 @@ def display_quiz():
         <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
         <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
         <style>
-            /* Reset et base */
+            /* Base styles */
             * { margin: 0; padding: 0; box-sizing: border-box; }
             
             body {
@@ -31,42 +31,36 @@ def display_quiz():
                 padding: 0.5rem;
             }
 
-            /* Container principal plus grand */
+            /* Quiz container */
             .quiz-wrapper {
-                max-width: 1360px;  /* +70% */
-                min-height: 680px;  /* +70% de la hauteur originale de 400px */
+                max-width: 1360px;
                 margin: 0 auto;
+                height: fit-content;
             }
 
-            /* Card du quiz plus grande */
             .quiz-card {
                 background: rgba(15, 23, 42, 0.6);
                 border-radius: 6px;
-                padding: 1.7rem;  /* +70% */
-                min-height: 680px;  /* +70% */
+                padding: 1.7rem;
                 border: 1px solid rgba(255, 255, 255, 0.1);
+                height: fit-content;
             }
 
-            /* En-tête compact */
-            .quiz-header {
-                margin-bottom: 0.5rem;
-            }
-
-            /* Titres et textes plus grands */
+            /* Header styles */
             .quiz-title {
-                font-size: 1.7rem;  /* +70% */
+                font-size: 1.7rem;
                 margin-bottom: 0.85rem;
                 color: rgba(255, 255, 255, 0.9);
             }
 
             .quiz-progress {
-                font-size: 1.36rem;  /* +70% */
+                font-size: 1.36rem;
                 color: rgba(255, 255, 255, 0.6);
             }
 
-            /* Barre de progression minimale */
+            /* Progress bar */
             .progress-bar {
-                height: 5px;  /* +70% */
+                height: 5px;
                 background: rgba(255, 255, 255, 0.1);
                 margin: 0.6rem 0;
             }
@@ -77,149 +71,96 @@ def display_quiz():
                 transition: width 0.3s ease;
             }
 
-            /* Question compacte */
+            /* Questions */
             .question {
                 margin: 0.5rem 0;
             }
 
             .question-title {
-                font-size: 1.53rem;  /* +70% */
+                font-size: 1.53rem;
                 margin-bottom: 0.85rem;
                 color: rgba(255, 255, 255, 0.9);
             }
 
             .question-text {
-                font-size: 1.45rem;  /* +70% */
+                font-size: 1.45rem;
                 color: rgba(255, 255, 255, 0.8);
                 margin-bottom: 1.28rem;
             }
 
-            /* Boutons de réponse plus grands */
+            /* Answer buttons */
             .answer-button {
                 width: 100%;
-                padding: 1.28rem 1.7rem;  /* +70% */
+                padding: 1.28rem 1.7rem;
                 margin: 0.51rem 0;
                 background: rgba(59, 130, 246, 0.1);
                 border: 1px solid rgba(59, 130, 246, 0.2);
                 border-radius: 4px;
                 color: white;
-                font-size: 1.45rem;  /* +70% */
+                font-size: 1.45rem;
                 cursor: pointer;
                 transition: all 0.2s ease;
                 display: flex;
                 align-items: center;
                 gap: 0.68rem;
-                min-height: 4.25rem;  /* +70% */
+                min-height: 4.25rem;
             }
 
-            /* Résultats plus grands */
+            /* Results section */
             .results {
-                padding: 1.28rem;  /* +70% */
-                min-height: 680px;  /* +70% */
+                padding: 1.28rem;
+                min-height: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                margin-bottom: 2rem;
             }
 
             .result-header {
-                font-size: 1.45rem;  /* +70% */
+                font-size: 1.45rem;
                 text-align: center;
-                margin-bottom: 0.85rem;
+                margin-bottom: 1rem;
                 padding: 0.68rem;
                 background: rgba(59, 130, 246, 0.1);
                 border-radius: 4px;
             }
 
             .result-item {
-                padding: 0.68rem 1.02rem;  /* +70% */
-                margin: 0.34rem 0;
-                font-size: 1.36rem;  /* +70% */
+                padding: 1rem;
+                font-size: 1.36rem;
                 border-radius: 4px;
                 background: rgba(59, 130, 246, 0.08);
                 display: flex;
-                gap: 0.85rem;
+                gap: 1rem;
                 align-items: flex-start;
+                margin-bottom: 0.75rem;
             }
 
-            /* Icônes plus grandes */
+            /* Icons */
             .icon {
-                width: 2.04rem;  /* +70% */
-                height: 2.04rem;  /* +70% */
+                width: 2rem;
+                height: 2rem;
                 flex-shrink: 0;
             }
 
             .chevron-icon {
-                width: 1.36rem;  /* +70% */
-                height: 1.36rem;  /* +70% */
+                width: 1.36rem;
+                height: 1.36rem;
             }
 
-            /* Styles des résultats avec couleurs */
-            .result-item .icon {
-                width: 2.04rem;  /* +70% */
-                height: 2.04rem;  /* +70% */
-            }
+            /* Icon colors */
+            .icon-yellow { color: #FBBF24; stroke: #FBBF24; }
+            .icon-blue { color: #60A5FA; stroke: #60A5FA; }
+            .icon-purple { color: #A78BFA; stroke: #A78BFA; }
+            .icon-green { color: #34D399; stroke: #34D399; }
+            .icon-red { color: #F87171; stroke: #F87171; }
 
-            .icon-yellow {
-                color: #FBBF24;
-                stroke: #FBBF24;
-            }
-
-            .icon-blue {
-                color: #60A5FA;
-                stroke: #60A5FA;
-            }
-
-            .icon-purple {
-                color: #A78BFA;
-                stroke: #A78BFA;
-            }
-
-            .icon-green {
-                color: #34D399;
-                stroke: #34D399;
-            }
-
-            .icon-red {
-                color: #F87171;
-                stroke: #F87171;
-            }
-
-            /* Card du quiz plus compacte pendant les questions */
-            .quiz-card {
-                background: rgba(15, 23, 42, 0.6);
-                border-radius: 6px;
-                padding: 1.7rem;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                height: fit-content;  /* S'adapte au contenu */
-                min-height: auto;    /* Supprime la hauteur minimale fixe */
-            }
-
-            /* Container du quiz plus compact pendant les questions */
-            .quiz-wrapper {
-                max-width: 1360px;
-                margin: 0 auto;
-                min-height: auto;    /* Supprime la hauteur minimale fixe */
-                height: fit-content;  /* S'adapte au contenu */
-            }
-
-            /* Container des résultats - garde une hauteur fixe */
-            .results {
-                padding: 1.28rem;
-                min-height: 680px;  /* Garde la hauteur minimale pour les résultats */
-            }
-
-            /* Ajustement de l'espacement des questions */
-            .question {
-                margin: 0.5rem 0;
-                padding-bottom: 0.5rem;  /* Réduit l'espace en bas */
-            }
-
-            /* Ajustement des boutons de réponse */
+            /* Spacing utilities */
             .space-y-3 {
-                margin-bottom: 0;  /* Supprime la marge en bas */
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
             }
-
-            .answer-button:last-child {
-                margin-bottom: 0;  /* Supprime la marge du dernier bouton */
-            }
-
         </style>
     </head>
     <body>
@@ -460,5 +401,5 @@ def display_quiz():
     </html>
     """
     
-    # Hauteur dynamique selon le contenu
-    components.html(quiz_html, height=493, width=None, scrolling=False)
+    # Augmenter la hauteur pour voir tous les résultats
+    components.html(quiz_html, height=800, width=None, scrolling=True)

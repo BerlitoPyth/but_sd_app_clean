@@ -1,19 +1,19 @@
 /* Typographie et titres */
 h1 {
-    margin-top: 3rem !important;
-    scroll-margin-top: 80px;
+    margin-top: 0 !important;  /* Réduit de 3rem à 0 */
+    scroll-margin-top: 0;      /* Réduit de 80px à 0 */
 }
 
 h2 {
-    margin: 1rem 0 !important;
+    margin: 0.5rem 0 !important;  /* Réduit de 1rem à 0.5rem */
     padding: 0 !important;
 }
 
 .custom-title {
-    margin-top: 3rem !important;
-    margin-bottom: 2rem;
-    padding-top: 2rem;
-    scroll-margin-top: 80px;
+    margin-top: 0 !important;     /* Réduit de 3rem à 0 */
+    margin-bottom: 1rem;          /* Réduit de 2rem à 1rem */
+    padding-top: 0;               /* Réduit de 2rem à 0 */
+    scroll-margin-top: 0;         /* Réduit de 80px à 0 */
 }
 
 .warning-title {

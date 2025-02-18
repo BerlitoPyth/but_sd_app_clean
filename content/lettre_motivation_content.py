@@ -1,6 +1,7 @@
 def get_lettre_motivation_content():
     """Retourne le contenu de la lettre de motivation."""
     return """
+    
     Madame, Monsieur,
     
     C'est avec enthousiasme que je vous présente ma candidature pour le BUT Science des Données.
