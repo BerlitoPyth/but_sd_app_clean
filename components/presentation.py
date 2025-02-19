@@ -8,18 +8,39 @@ def display_presentation(show_title=True):
         # Get absolute path to image
         image_path = Path(__file__).parent.parent.resolve() / ".assets" / "profile.jpg"
         
-        # Create columns for title and photo
+        # Create columns for content and photo
         col1, col2 = st.columns([2, 1])
         
-        # Display title in first column
+        # Display title and introduction text in first column
         with col1:
             st.markdown("""
                 <h1 style='
                     color: white;
                     font-size: 2rem;
                     margin-top: 1rem;
-                    margin-bottom: 1rem;
-                '>👋 Bienvenue, découvrez-en plus sur moi !</h1>
+                    margin-bottom: 1.5rem;
+                '>👋 Découvrez-en plus sur moi !</h1>
+            """, unsafe_allow_html=True)
+
+            # Texte d'introduction dans la même colonne que le titre
+            st.markdown("""
+                <div style='
+                    background: rgba(96, 165, 250, 0.1);
+                    border: 1px solid rgba(96, 165, 250, 0.2);
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    margin-bottom: 1.5rem;
+                    color: #cbd5e1;
+                    line-height: 1.6;
+                '>
+                    <p style='margin-bottom: 1rem;'>
+                        Le développement de cette application reflète ma passion pour la Data Science et la programmation.
+                        Elle combine analyse de données, interface interactive et présentation de ma personne.
+                    </p>
+                    <p>
+                        Je pense que cette réalisation démontre ma capacité à mener un projet de bout en bout,
+                        de l'analyse des besoins à la mise en production, en passant par le développement et le design.
+                </div>
             """, unsafe_allow_html=True)
         
         # Display image in second column
@@ -29,6 +50,7 @@ def display_presentation(show_title=True):
                 width=200,
                 use_container_width=False
             )
+
     except Exception as e:
         st.error(f"Erreur lors du chargement de l'image: {str(e)}")
         print(f"Full error details: {e}")

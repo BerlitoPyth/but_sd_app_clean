@@ -15,25 +15,36 @@ from components.presentation import display_presentation
 from components.projet_gaming import display_project_concept
 from components.floating_chat import add_floating_chat_to_app  # Changé generate_response pour add_floating_chat_to_app
 from components.matrix_animation import display_matrix_animation
-from components.admission_prediction import display_prediction_interface
 from content.lettre_motivation_content import get_lettre_motivation_content, get_note_importante
 from components.admission_prediction import (
     load_data, 
     display_summary_stats,
     display_prediction_interface,
-    display_global_interface
+    display_global_interface,
+    display_conseils,
+    display_profil_feedback
 )
 
 def load_css():
     """Charge les fichiers CSS"""
-    css_files = ['main.css', 'layout.css', 'typography.css', 'components.css', 'sidebar.css']
+    css_files = [
+        'typography.css',
+        'layout.css',
+        'components.css',
+        'main.css',
+        'sidebar.css'
+    ]
     for css_file in css_files:
         css_path = Path(project_root) / "styles" / css_file
         try:
+            print(f"Tentative de chargement de {css_path}")  # Debug
             css_content = css_path.read_text()
             st.markdown(f"<style>{css_content}</style>", unsafe_allow_html=True)
+            print(f"Chargement réussi de {css_file}")  # Debug
         except Exception as e:
             print(f"Erreur lors du chargement de {css_file}: {e}")
+            st.warning(f"Erreur de chargement du style {css_file}")
+
 
 def write_text_slowly(text):
     """Fonction pour l'effet machine à écrire"""
@@ -65,6 +76,18 @@ def main():
 
     # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
+        # Ajout de l'email
+        st.markdown("""
+            <div style='
+                padding: 0.5rem 0;
+                color: #60a5fa;
+                font-size: 0.9em;
+                text-align: center;
+            '>
+                📧 berliatadrien@gmail.com
+            </div>
+        """, unsafe_allow_html=True)
+        
         st.title("🎯 Navigation")
         
         # Menu de navigation
@@ -72,7 +95,7 @@ def main():
             "",
             ["🏠 Accueil",
              "📊 Data Project",
-             "🔧 Projet",
+             "🔧 Projet Perso",
              "✨ Quiz",
              "👤 Présentation",]
         )
@@ -213,7 +236,7 @@ def main():
         display_presentation(show_title=False)  # Nouveau paramètre pour éviter le doublon
 
         
-    elif selection == "🔧 Projet":
+    elif selection == "🔧 Projet Perso":
         st.markdown("""
             <h1 style="
                 font-size: 2.5em;
@@ -251,62 +274,56 @@ def main():
                 # 3. Show expander
                 with st.expander("ℹ️ Comment fonctionne le modèle de prédiction ?"):
                     st.markdown("""
-                    ### Modèle de calcul des chances d'admission
+                    ### Comment sont calculées vos chances d'admission ?
 
                     Le calculateur utilise un modèle basé sur les données réelles Parcoursup 2024 qui combine trois facteurs principaux :
 
-                    #### 1. Taux de base par type de Bac (facteur principal)
-                    - Calculé à partir des statistiques réelles de chaque IUT
-                    - Utilise le ratio : `nombre d'admis du même bac / nombre de candidats du même bac`
+                    #### 1. Taux de proposition de base
+                    - Calculé à partir des statistiques réelles de propositions par type de Bac
+                    - Utilise le ratio : nombre de propositions / nombre de candidats du même profil
                     - Prend en compte :
-                        * Pour Bac général : `acc_bg / nb_voe_pp_bg`
-                        * Pour Bac technologique : `acc_bt / nb_voe_pp_bt`
-                        * Pour autres profils : `acc_at / nb_voe_pp_at`
+                        * Pour Bac général : `propositions Bac général / candidats Bac général`
+                        * Pour Bac technologique : `propositions Bac techno / candidats Bac techno`
+                        * Pour autres profils (DAEU...) : `propositions autres / candidats autres`
 
                     #### 2. Bonus Mention au Bac
-                    Multiplicateur appliqué selon la mention :
+                    Multiplicateur appliqué selon la mention à partir des données réelles :
                     - Sans mention : ×1.0 (pas de bonus)
                     - Assez Bien : ×1.3 (+30%)
                     - Bien : ×1.6 (+60%)
                     - Très Bien : ×2.0 (+100%)
 
                     #### 3. Bonus Boursier
-                    - Bonus minimum de 10% pour tous les boursiers
-                    - Bonus supplémentaire basé sur le taux de boursiers admis dans l'IUT
-                    - Formule : `1 + max(0.1, taux_boursiers_iut)`
+                    - Bonus proportionnel au taux de boursiers de l'établissement
+                    - Formule : `1 + max(0.1, taux_boursiers_etablissement)`
+                    - Minimum garanti de 10% de bonus pour les boursiers
 
                     #### Calcul final
+                    La probabilité finale est calculée en multipliant :
                     ```
-                    Chances = Taux_base × Bonus_mention × Bonus_boursier
+                    `Probabilité = Taux de proposition × Bonus mention × Bonus boursier`
                     ```
 
-                    #### Ajustements
-                    - Les chances sont plafonnées à 100%
-                    - Un minimum de 1% est garanti si le taux de base est non nul
-                    - Prise en compte du taux de conversion proposition → admission
-
-                    #### Exemple
-                    Pour un candidat avec :
-                    - Bac général (taux de base 40%)
-                    - Mention Bien (×1.6)
-                    - Boursier dans un IUT avec 15% de boursiers (×1.15)
-                    
-                    Le calcul serait : `40% × 1.6 × 1.15 = 73.6%`
+                    #### Important à noter
+                    - Les probabilités sont plafonnées à 100%
+                    - Ces chances représentent la probabilité de recevoir une proposition, pas d'être accepté définitivement
 
                     #### Fiabilité
-                    Les prédictions sont basées sur les données réelles Parcoursup 2024 mais restent indicatives. 
-                    De nombreux facteurs qualitatifs (lettre de motivation, parcours spécifique, etc.) ne sont pas pris en compte.
+                    - Le modèle se base uniquement sur les données quantitatives disponibles
+                    - Les éléments qualitatifs (lettre de motivation, projets personnels, etc.) peuvent influencer significativement la décision finale
                     """)
                 
                 # 4. Add tabs for prediction models
                 tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
                 
                 with tab1:
-                    st.markdown("### Prédiction personnalisée")
-                    display_prediction_interface(df, show_title=False)
+                    st.markdown("⚠️ Ces probabilités représentent vos chances de **recevoir une proposition de l'IUT**, pas d'être accepté définitivement. Ce modèle n'est sans doute pas parfait, j'ai sûrement omis des facteurs, et c'est justement pour ça que je veux rejoindre le BUT SD ! En tout cas, j'ai pris beaucoup de plaisir à le réaliser tout comme cette application. 😊")
+                    iut_choice, probability = display_prediction_interface(df, show_title=False)
+                    display_profil_feedback(probability)
                 
                 with tab2:
                     display_global_interface(df)
+                    display_conseils(df)
                     
         except Exception as e:
             st.error(f"Erreur lors du chargement des données: {str(e)}")

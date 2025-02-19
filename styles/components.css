@@ -12,12 +12,13 @@
     cursor: pointer;
 }
 
-.section-title {
+/* Renommer pour éviter le conflit avec conseils.css */
+.component-section-title {
     scroll-margin-top: 60px;
     opacity: 0;
     transition: opacity 0.5s;
 }
 
-.section-title.visible {
+.component-section-title.visible {
     opacity: 1;
 }

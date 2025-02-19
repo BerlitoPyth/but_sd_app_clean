@@ -23,14 +23,14 @@ h2 {
 }
 
 /* Section Titles */
-.section-title {
+.main-section-title {
     margin-top: 3rem !important;
     scroll-margin-top: 80px;
     opacity: 0;
     transition: opacity 0.5s;
 }
 
-.section-title.visible {
+.main-section-title.visible {
     opacity: 1;
 }
 
@@ -87,11 +87,31 @@ h2 {
 /* Style pour les onglets */
 .stTabs [data-baseweb="tab"] {
     color: #FFFFFF !important;
+    width: 100% !important;
+    background-color: transparent !important;
 }
 
 .stTabs [data-baseweb="tab-list"] {
-    background-color: #0F172A !important;
+    background-color: transparent !important;
     border-color: #334155 !important;
+    display: flex !important;
+}
+
+.stTabs [data-baseweb="tab-panel"] {
+    width: 100% !important;
+    background-color: transparent !important;
+}
+
+/* Pour que les boutons dans les onglets prennent toute la largeur */
+.stTabs [data-baseweb="tab-panel"] .stButton > button {
+    width: 100% !important;
+    margin: 5px 0 !important;
+    background-color: transparent !important;
+}
+
+/* Ajout d'un effet hover subtil */
+.stTabs [data-baseweb="tab"]:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Style pour les cartes metrics */

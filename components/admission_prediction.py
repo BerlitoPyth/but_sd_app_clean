@@ -4,6 +4,79 @@ import plotly.express as px
 import plotly.graph_objects as go
 import json
 from pathlib import Path
+            
+def display_profil_feedback(probability):
+    """Affiche les recommandations basées sur le profil avec un style amélioré"""
+    try:
+        probability = float(probability)
+        
+        if probability >= 30:
+            st.markdown("""
+                <div style='background: linear-gradient(90deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%); 
+                     border: 1px solid rgba(76, 175, 80, 0.3); 
+                     border-radius: 10px; 
+                     padding: 20px; 
+                     margin: 10px 0;'>
+                    <h3 style='color: #4CAF50; margin-bottom: 20px; font-size: 1.5em; font-weight: bold;'>
+                        ✨ Profil compétitif
+                    </h3>
+                    <div style='background: rgba(76, 175, 80, 0.05); 
+                         border-radius: 8px; 
+                         padding: 15px; 
+                         margin-bottom: 20px;'>
+                        <h4 style='color: #4CAF50; margin-bottom: 10px; font-size: 1.1em; font-weight: bold;'>
+                            💪 Points forts
+                        </h4>
+                        <ul style='list-style-type: none; margin: 0; padding: 0; color: white;'>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #4CAF50'>✓</span> Votre profil correspond bien aux critères de sélection de cet IUT
+                            </li>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #4CAF50'>✓</span> Vous avez de bonnes chances d'obtenir une proposition
+                            </li>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #4CAF50'>✓</span> Continuez à maintenir votre niveau et préparez bien votre dossier
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown("""
+                <div style='background: rgba(255, 167, 38, 0.1); 
+                     border: 1px solid rgba(255, 167, 38, 0.3); 
+                     border-radius: 10px; 
+                     padding: 20px; 
+                     margin: 10px 0;'>
+                    <h3 style='color: #FFA726; margin-bottom: 20px; font-size: 1.5em; font-weight: bold;'>
+                        ⚠️ Profil à consolider
+                    </h3>
+                    <div style='background: rgba(255, 167, 38, 0.05); 
+                         border-radius: 8px; 
+                         padding: 15px; 
+                         margin-bottom: 20px;'>
+                        <h4 style='color: #FFA726; margin-bottom: 10px; font-size: 1.1em; font-weight: bold;'>
+                            💡 Recommandations
+                        </h4>
+                        <ul style='list-style-type: none; margin: 0; padding: 0; color: white;'>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #FFA726'>▹</span> Mettez en avant vos projets personnels et votre motivation
+                            </li>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #FFA726'>▹</span> Considérez des IUT avec un taux de pression plus favorable
+                            </li>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #FFA726'>▹</span> Soignez particulièrement votre lettre de motivation
+                            </li>
+                            <li style='margin-bottom: 8px;'>
+                                <span style='color: #FFA726'>▹</span> Développez des compétences en programmation ou data science
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"Erreur dans display_profil_feedback: {str(e)}")
 
 def load_data():
     """Charge les données depuis le fichier JSON avec gestion des chemins"""
@@ -18,19 +91,19 @@ def load_data():
         return None
 
 def calculate_admission_probability(iut_data, profile):
-    """Calcule la probabilité d'admission avec la nouvelle formule unifiée"""
+    """Calcule la probabilité de recevoir une proposition selon le profil"""
     # 1. Calculer le taux de base selon le type de bac
     if profile['bac_type'] == "Général":
         candidats = iut_data['nb_voe_pp_bg']
-        admis = iut_data['acc_bg']
+        propositions = iut_data['prop_tot_bg']
     elif profile['bac_type'] == "Technologique":
         candidats = iut_data['nb_voe_pp_bt']
-        admis = iut_data['acc_bt']
+        propositions = iut_data['prop_tot_bt']
     else:  # DAEU et autres
         candidats = iut_data['nb_voe_pp_at']
-        admis = iut_data['acc_at']
+        propositions = iut_data['prop_tot_at']
         
-    base_rate = (admis / candidats * 100) if candidats > 0 else 0
+    base_rate = (propositions / candidats * 100) if candidats > 0 else 0
 
     # 2. Bonus mention
     mention_bonus = {
@@ -55,7 +128,7 @@ def calculate_admission_probability(iut_data, profile):
         'capacite': iut_data['capa_fin'],
         'places_restantes': iut_data['capa_fin'] - iut_data['acc_tot'],
         'taux_pression': round(iut_data['voe_tot'] / iut_data['capa_fin'], 1),
-        'taux_admission': round((iut_data['acc_tot'] / iut_data['voe_tot']) * 100, 1),
+        'taux_proposition': round((iut_data['prop_tot'] / iut_data['voe_tot']) * 100, 1),
         'profil_match': round(base_rate, 1),
         'mention_boost': round((mention_bonus - 1) * 100, 1),
         'boursier_boost': round((boursier_bonus - 1) * 100, 1)
@@ -64,21 +137,22 @@ def calculate_admission_probability(iut_data, profile):
     return probability, stats
 
 def calculate_chances(profile, data):
-    """Calcule les chances pour tous les établissements avec la formule unifiée"""
+    
+    """Calcule les chances pour tous les établissements"""
     results = []
     for _, iut in data.iterrows():
         # Base rate calculation based on bac type
         if profile['bac_type'] == "Général":
             candidats = iut['nb_voe_pp_bg']
-            admis = iut['acc_bg']
+            propositions = iut['prop_tot_bg']
         elif profile['bac_type'] == "Technologique":
             candidats = iut['nb_voe_pp_bt']
-            admis = iut['acc_bt']
+            propositions = iut['prop_tot_bt']
         else:  # DAEU et autres
             candidats = iut['nb_voe_pp_at']
-            admis = iut['acc_at']
+            propositions = iut['prop_tot_at']
         
-        base_rate = (admis / candidats * 100) if candidats > 0 else 0
+        base_rate = (propositions / candidats * 100) if candidats > 0 else 0
 
         # Mention bonus
         mention_bonus = {
@@ -135,15 +209,16 @@ def display_summary_stats(data):
     with col3:
         st.markdown(f"""
             <div style='background-color: #EF6C00; padding: 20px; border-radius: 10px;'>
-                <h3 style='color: #FFFFFF; margin: 0;'>Total admis</h3>
+                <h3 style='color: #FFFFFF; margin: 0;'>Total propositions</h3>
                 <p style='color: #FFFFFF; font-size: 24px; font-weight: bold; margin: 10px 0 0 0;'>
-                    {data['acc_tot'].sum():,}
+                    {data['prop_tot'].sum():,}
                 </p>
             </div>
         """, unsafe_allow_html=True)
 
 def display_prediction_interface(data, show_title=True):
-    """Interface de prédiction des chances d'admission"""
+    """Interface de prédiction des chances de recevoir une proposition"""
+    
     # Selection interface
     col1, col2 = st.columns(2)
     
@@ -161,10 +236,10 @@ def display_prediction_interface(data, show_title=True):
         'boursier': boursier
     }
 
-    # Get IUT data first
+    # Get IUT data
     iut_data = data[data['g_ea_lib_vx'] == iut_choice].iloc[0]
     
-    # Calculate probability using new logic
+    # Calculate probability
     probability, stats = calculate_admission_probability(iut_data, profile)
     
     # Affichage résultats
@@ -175,42 +250,52 @@ def display_prediction_interface(data, show_title=True):
         fig = go.Figure(go.Indicator(
             mode="gauge+number",
             value=probability,
-            title={'text': "Probabilité d'admission"},
-            gauge={'axis': {'range': [0, 100]},
-                  'bar': {'color': "darkblue"},
-                  'steps': [
-                      {'range': [0, 33], 'color': "lightgray"},
-                      {'range': [33, 66], 'color': "gray"},
-                      {'range': [66, 100], 'color': "darkgray"}
-                  ]}
+            title={'text': "Probabilité de recevoir une proposition"},
+            number={
+                'font': {'size': 50},
+                'suffix': "%"
+            },
+            gauge={
+                'axis': {'range': [0, 100]},
+                'bar': {
+                    'color': f'rgba({255-int(probability*2.55)},{int(probability*2.55)},0,0.8)'
+                },
+                'bgcolor': "rgba(0,0,0,0.1)",
+                'steps': [],
+                'threshold': {
+                    'line': {'color': "white", 'width': 2},
+                    'thickness': 0.75,
+                    'value': probability
+                }
+            }
         ))
+
+        fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            font={'color': "white", 'size': 20},
+            height=400,
+            margin=dict(t=100, b=0)
+        )
         st.plotly_chart(fig)
     
     with col2:
         st.metric("Places disponibles", stats['capacite'])
         st.metric("Places restantes", stats['places_restantes'])
         st.metric("Taux de pression", f"{stats['taux_pression']} candidats/place")
-        st.metric("Taux d'admission", f"{stats['taux_admission']}%")
-    
-    # Analyse détaillée
-    st.markdown("""
-    <div style='background-color: rgba(0, 0, 0, 0.2); padding: 20px; border-radius: 10px; margin: 20px 0;'>
-        <h3 style='color: white; margin-top: 0;'>📊 Analyse détaillée de votre candidature</h3>
-    </div>
-    """, unsafe_allow_html=True)
+        st.metric("Taux de proposition", f"{stats['taux_proposition']}%")
     
     col1, col2 = st.columns(2)
     
     with col1:
         # Calculate percentage distributions
-        total_admis = iut_data['acc_bg'] + iut_data['acc_bt'] + iut_data['acc_at']
-        pct_bg = round((iut_data['acc_bg'] / total_admis * 100), 1) if total_admis > 0 else 0
-        pct_bt = round((iut_data['acc_bt'] / total_admis * 100), 1) if total_admis > 0 else 0
-        pct_at = round((iut_data['acc_at'] / total_admis * 100), 1) if total_admis > 0 else 0
+        total_prop = iut_data['prop_tot_bg'] + iut_data['prop_tot_bt'] + iut_data['prop_tot_at']
+        pct_bg = round((iut_data['prop_tot_bg'] / total_prop * 100), 1) if total_prop > 0 else 0
+        pct_bt = round((iut_data['prop_tot_bt'] / total_prop * 100), 1) if total_prop > 0 else 0
+        pct_at = round((iut_data['prop_tot_at'] / total_prop * 100), 1) if total_prop > 0 else 0
         
         st.markdown(f"""
         #### 📈 Statistiques de l'établissement
-        - **Répartition des admis :**
+        - **Répartition des propositions :**
           * Bac général : {pct_bg}%
           * Bac technologique : {pct_bt}%
           * Autres profils : {pct_at}%
@@ -223,7 +308,7 @@ def display_prediction_interface(data, show_title=True):
     with col2:
         st.markdown(f"""
         #### 🎯 Adéquation de votre profil
-        - **Match type de bac :** {stats['profil_match']}%
+        - **Chances de proposition :** {stats['profil_match']}%
           * {'✅ Profil recherché' if stats['profil_match'] > 50 else '⚠️ Profil moins représenté'}
         
         - **Bonus acquis :**
@@ -231,95 +316,58 @@ def display_prediction_interface(data, show_title=True):
           * Boursier : +{stats['boursier_boost']}%
         """)
 
-    # Recommandations personnalisées
-    st.markdown("<h3 style='color: white; margin-top: 20px;'>🎓 Conseils personnalisés</h3>", unsafe_allow_html=True)
+    return iut_choice, probability  # Retourne à la fois l'IUT choisi et la probabilité
+def display_conseils(sorted_df=None):
+    """Affiche les conseils pour la candidature en utilisant les composants natifs Streamlit"""
     
-    # Calcul du taux moyen d'admission pour contextualiser
-    taux_admission_moyen = (iut_data['acc_tot'] / iut_data['voe_tot']) * 100
-    
-    if probability >= 30:  # Top 15% des candidats
-        st.success(f"""
-        ### ✨ Profil très compétitif (Top 15%)
+    # Conteneur principal avec style personnalisé
+    with st.container():
+        # Titre principal
+        st.markdown("""
+            <h3 style='
+                color: #FFC107;
+                margin-bottom: 20px;
+                font-size: 1.5em;
+                font-weight: bold;
+                padding: 10px;
+                background-color: rgba(255, 193, 7, 0.1);
+                border-radius: 10px;
+                border: 1px solid rgba(255, 193, 7, 0.3);
+            '>
+                💡 Conseils pour votre candidature
+            </h3>
+        """, unsafe_allow_html=True)
         
-        **Contexte de sélection :**
-        - Taux d'admission moyen : {taux_admission_moyen:.1f}%
-        - Formation très sélective : {iut_data['capa_fin']} places pour {iut_data['voe_tot']} candidats
-        
-        **Points forts de votre dossier :**
-        - Votre profil correspond aux critères principaux
-        - Vos chances sont supérieures à la moyenne
-        
-        **Actions prioritaires :**
-        1. Préparez un dossier d'excellence :
-           * CV détaillé de vos projets et compétences
-           * Lettre de motivation ciblée pour chaque IUT
-           * Portfolio de vos réalisations techniques
-        
-        2. Anticipez la formation :
-           * Initiez-vous à Python (certifications à l'appui)
-           * Renforcez vos bases en mathématiques
-           * Suivez des cours en ligne de statistiques
+        # Section 1
+        st.subheader("🎯 Diversifiez vos choix")
+        st.markdown("""
+        - Candidatez à des établissements avec différents niveaux de sélectivité
+        - Ne vous limitez pas aux IUT les plus demandés
         """)
-    elif probability >= 15:  # Dans la moyenne haute
-        st.info(f"""
-        ### 📊 Candidature compétitive
         
-        **Contexte important :**
-        - Taux d'admission : {taux_admission_moyen:.1f}%
-        - Places disponibles : {iut_data['capa_fin']}
-        - Candidats : {iut_data['voe_tot']}
-        
-        **Stratégie recommandée :**
-        1. Renforcez votre dossier :
-           * Développez des projets personnels (programmation/data)
-           * Obtenez des certifications en ligne
-           * Documentez toutes vos réalisations
-        
-        2. Optimisez vos chances :
-           * Candidatez dans plusieurs IUT
-           * Adaptez votre lettre pour chaque établissement
-           * Préparez-vous aux éventuels entretiens
+        # Section 2
+        st.subheader("⭐ Optimisez vos chances")
+        st.markdown("""
+        - Préparez un dossier solide pour chaque établissement
+        - Tenez compte de la mobilité géographique
+        - Considérez les IUT avec moins de candidatures
         """)
-    else:  # Chances plus faibles
-        st.warning(f"""
-        ### ⚠️ Contexte très sélectif
         
-        **Statistiques clés :**
-        - Taux d'admission : {taux_admission_moyen:.1f}%
-        - {iut_data['capa_fin']} places pour {iut_data['voe_tot']} candidats
-        - Taux de pression : {stats['taux_pression']} candidats/place
-        
-        **Plan d'action recommandé :**
-        1. Développez votre profil technique :
-           * Suivez des cours de programmation (Python)
-           * Initiez-vous aux statistiques et à l'analyse de données
-           * Créez un portfolio de projets personnels
-        
-        2. Stratégie de candidature :
-           * Visez plusieurs IUT avec des profils différents
-           * Préparez des alternatives (BTS SIO, BUT Info...)
-           * Considérez une année préparatoire si nécessaire
-        
-        3. Maximisez vos atouts :
-           * Mettez en avant votre motivation et votre potentiel
-           * Démontrez votre capacité d'apprentissage
-           * Valorisez toute expérience pertinente
+        # Section 3
+        st.subheader("🎓 Soyez stratégique")
+        st.markdown("""
+        - Les IUT moins demandés peuvent offrir d'excellentes opportunités
+        - Tenez compte du coût de la vie dans chaque ville
+        - Renseignez-vous sur les spécificités de chaque formation
         """)
-
-    # Note sur la sélectivité générale
-    st.info("""
-    💡 **Comprendre la sélectivité :**
-    - Le BUT SD est parmi les formations les plus sélectives de Parcoursup
-    - Taux d'admission moyen national : 7.2%
-    - Même les excellents dossiers doivent se démarquer
-    - La motivation et la préparation technique sont déterminantes
-    """)
-
-    return iut_choice, probability
+        
+        # Note finale (optionnelle)
+        st.info("Ces conseils sont basés sur l'analyse des données Parcoursup et visent à optimiser vos chances d'admission.")
 
 def display_global_interface(data):
     """Interface de comparaison globale"""
     st.subheader("Comparer tous les établissements")
+    
     
     col1, col2, col3 = st.columns(3)
     
@@ -348,51 +396,108 @@ def display_global_interface(data):
     
     results_df = calculate_chances(profile, data)
     
+    # Statistiques globales
+    st.subheader("Statistiques générales")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric(
+            "Capacité moyenne",
+            f"{int(results_df['capacite'].mean())}"
+        )
+    with col2:
+        st.metric(
+            "Candidats moyens/IUT",
+            f"{int(results_df['nb_candidats'].mean())}"
+        )
+    with col3:
+        st.metric(
+            "Chance moyenne",
+            f"{results_df['chances'].mean():.1f}%"
+        )
+    with col4:
+        st.metric(
+            "Taux boursiers moyen",
+            f"{results_df['pct_boursiers'].mean():.1f}%"
+        )
+    
     # Graphique
     fig = px.bar(
         results_df,
         x='etablissement',
         y='chances',
-        title='Chances d\'admission par établissement',
-        labels={'chances': 'Chances estimées (%)', 'etablissement': 'Établissement'},
+        title='Chances de recevoir une proposition par établissement',
+        labels={'chances': 'Probabilité (%)', 'etablissement': 'Établissement'},
         color='chances',
-        color_continuous_scale='RdYlGn'
+        color_continuous_scale=[[0, 'rgb(255,50,50)'], 
+                          [0.5, 'rgb(255,255,50)'], 
+                          [1, 'rgb(50,255,50)']],  # Rouge -> Jaune -> Vert
+        hover_data={
+            'ville': True,
+            'region': True,
+            'capacite': ':,.0f',
+            'nb_candidats': ':,.0f',
+            'pct_boursiers': ':.1f%'
+        }
     )
-    
+
     fig.update_layout(
         xaxis_tickangle=-45,
-        height=600
+        height=600,
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)',
+        font={'color': 'white', 'size': 12},
+        title_font={'size': 24},
+        hoverlabel=dict(
+            bgcolor="rgba(0,0,0,0.8)",  # Fond noir semi-transparent
+            font=dict(color="white", size=14),  # Texte blanc
+            bordercolor="white"  # Bordure blanche
+        ),
+        xaxis=dict(
+            gridcolor='rgba(128,128,128,0.1)',
+            color='white',
+            title_font={'size': 14}
+        ),
+        yaxis=dict(
+            gridcolor='rgba(128,128,128,0.1)',
+            color='white',
+            title_font={'size': 14}
+        ),
+        coloraxis_colorbar=dict(
+            title="Probabilité (%)",
+            title_font={'color': 'white'},
+            tickfont={'color': 'white'}
+        )
     )
     
     st.plotly_chart(fig, use_container_width=True)
     
-    # Tableau détaillé
-    st.dataframe(
-        results_df.style.format({
-            'capacite': '{:,.0f}',
-            'nb_candidats': '{:,.0f}',
-            'chances': '{:.1f}%',
-            'pct_boursiers': '{:.1f}%'
-        })
+    # Tableau des résultats
+    sorted_df = results_df.copy()
+    sort_column = st.selectbox(
+        "Trier par",
+        options=['chances', 'capacite', 'nb_candidats', 'pct_boursiers'],
+        format_func=lambda x: {
+            'chances': 'Probabilité',
+            'capacite': 'Capacité',
+            'nb_candidats': 'Nombre de candidats',
+            'pct_boursiers': 'Pourcentage de boursiers'
+        }[x]
     )
+    
+    sorted_df = sorted_df.sort_values(sort_column, ascending=False)
+    
+    # Afficher le tableau une seule fois avec le formatage
+    st.dataframe(sorted_df.style.format({
+        'capacite': '{:,.0f}',
+        'nb_candidats': '{:,.0f}',
+        'chances': '{:.1f}%',
+        'pct_boursiers': '{:.1f}%'
+    }))
 
 def main():
     """Main function for standalone testing"""
-    if __name__ == "__main__":
-        st.set_page_config(layout="wide", page_title="Calculateur d'admission BUT SD")
-        
-        # Load data first
-        df = load_data()
-        
-        if df is not None:
-            # Create tabs
-            tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
-            
-            with tab1:
-                display_prediction_interface(df, show_title=False)
-            
-            with tab2:
-                display_global_interface(df)
+    st.set_page_config(layout="wide", page_title="Calculateur Parcoursup BUT SD") 
 
 if __name__ == "__main__":
     main()

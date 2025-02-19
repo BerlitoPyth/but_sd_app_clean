@@ -87,7 +87,7 @@ def get_note_importante():
                 <p style="line-height: 1.7; margin: 0;">
                 Le véritable objectif était de me démarquer en illustrant l'investissement que je mets dans mes projets
                 et mon désir de rejoindre votre établissement. J'ai toujours pensé qu'il est préférable d'agir que de parler. J'espère que vous aurez pris le
-                temps de me lire jusqu'ici et que cela vous aura convaincu car j'y ai consacré beaucoup de temps et d'efforts. Merci 😊
+                temps de me lire jusqu'ici et que cela vous aura convaincu car j'y ai consacré beaucoup de temps et d'efforts. Ce qui est sûr, c'est que ce projet m'a permis d'apprendre énormément et j'ai pris beaucoup de plaisir ! Merci 😊
                 </p>
             </div>
         </div>

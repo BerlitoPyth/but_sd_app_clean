@@ -111,7 +111,7 @@ def display_matrix_animation():
 
         .loading-bar-container {
             position: fixed;
-            bottom: 25%;
+            bottom: 35%;  /* Changed from 25% to 35% */
             left: 50%;
             transform: translateX(-50%);
             width: 400px;
@@ -149,7 +149,7 @@ def display_matrix_animation():
                 #00FF41 100%);
             background-size: 200% 100%;
             animation: 
-                loading 6s ease-in-out forwards,
+                loading 7s ease-in-out forwards,  /* Updated duration */
                 gradient-shift 1.5s linear infinite;
             box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
         }
@@ -180,24 +180,35 @@ def display_matrix_animation():
             display: block;
             overflow: hidden;
             white-space: nowrap;
-            border-right: 3px solid #ffffff;
             width: 0;
             opacity: 1;
-            margin-bottom: 0.5em;  /* Espacement entre les lignes */
+            margin-bottom: 0.5em;
         }
 
         .typing-text.part1 {
+            border-right: 3px solid #ffffff;
             animation: 
                 typing 2s steps(40) 1s forwards,
-                blink-caret 0.75s step-end infinite;
+                blink-caret 0.75s step-end infinite 1s,
+                hide-caret 0s linear 3s forwards;  /* Nouveau: cache le curseur après 3s */
         }
 
         .typing-text.part2 {
+            border-right: 3px solid #ffffff;
             animation: 
                 typing 2s steps(40) 3.5s forwards,
-                blink-caret 0.75s step-end infinite;
+                blink-caret 0.75s step-end infinite 3.5s,
+                hide-caret 0s linear 5.5s forwards;  /* Nouveau: cache le curseur après 5.5s */
         }
 
+        /* Ajouter cette nouvelle animation pour cacher le curseur */
+        @keyframes hide-caret {
+            to {
+                border-right-color: transparent;
+            }
+        }
+
+        /* Les autres keyframes restent identiques */
         @keyframes typing {
             from { width: 0; }
             to { width: 100%; }
@@ -239,14 +250,14 @@ def display_matrix_animation():
             <div class="matrix-animation">
                 <div class="matrix-rain">{rain_content}</div>
                 <div class="disclaimer-box">
-                    <div class="typing-text part1" style="color: white;">Cette application a été développée entièrement par mes soins.</div>
-                    <div class="typing-text part2" style="color: white;">Design et code originaux avec assistance IA.</div>
+                    <div class="typing-text part1" style="color: white;">Application développée pour ma candidature au BUT Science des Données</div>
+                    <div class="typing-text part2" style="color: white;">Technologies utilisées : Python, Streamlit, Data Analysis</div>
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
                 </div>
                 <div class="loading-bar-container">
-                    <div class="loading-bar"></div>
+                    <div class="loading-bar" style="animation: loading 7s ease-in-out forwards, gradient-shift 1.5s linear infinite;"></div>
                 </div>
             </div>
         """
@@ -260,7 +271,7 @@ def display_matrix_animation():
         "Bienvenue dans la Matrice"
     ]
     
-    delays = [2.0, 2.0, 2.0, 2.0, 1.5]  # Total: 9.5s + 0.5s délai final = 10s
+    delays = [1.5, 1.5, 1.5, 1.5, 1.0]  # Total: 7s
     
     # Utiliser la même pluie pour tous les messages
     for message, delay in zip(messages, delays):
