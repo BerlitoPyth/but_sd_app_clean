@@ -45,7 +45,6 @@ def load_css():
             print(f"Erreur lors du chargement de {css_file}: {e}")
             st.warning(f"Erreur de chargement du style {css_file}")
 
-
 def write_text_slowly(text):
     """Fonction pour l'effet machine à écrire"""
     placeholder = st.empty()
@@ -54,12 +53,19 @@ def write_text_slowly(text):
         time.sleep(0.03)
     placeholder.markdown(f"### {text}")
 
+# Modifier la fonction main() pour ajouter un état de navigation
 def main():
     st.set_page_config(
         page_title="Candidature BUT Science des Données",
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    
+    # Ajouter un container vide tout en haut avec une ancre
+    scroll_to_top = st.empty()
+    scroll_to_top.markdown("""
+        <div id="top"></div>
+    """, unsafe_allow_html=True)
     
     load_css()
     apply_dark_theme()  # Appliquer le thème sombre directement
@@ -99,6 +105,7 @@ def main():
              "✨ Quiz",
              "👤 Présentation",]
         )
+        
         st.session_state.selection = selection
         
         # Lettre de recommandation directement après le menu

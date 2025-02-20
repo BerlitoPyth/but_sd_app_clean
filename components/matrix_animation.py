@@ -149,7 +149,7 @@ def display_matrix_animation():
                 #00FF41 100%);
             background-size: 200% 100%;
             animation: 
-                loading 7s ease-in-out forwards,  /* Updated duration */
+                loading 9s ease-in-out forwards,  /* Updated duration */
                 gradient-shift 1.5s linear infinite;
             box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
         }
@@ -188,17 +188,25 @@ def display_matrix_animation():
         .typing-text.part1 {
             border-right: 3px solid #ffffff;
             animation: 
-                typing 2s steps(40) 1s forwards,
+                typing 1.5s steps(40) 1s forwards,         /* Réduit de 2s à 1.5s */
                 blink-caret 0.75s step-end infinite 1s,
-                hide-caret 0s linear 3s forwards;  /* Nouveau: cache le curseur après 3s */
+                hide-caret 0s linear 3s forwards;          /* Ajusté à 3s */
         }
 
         .typing-text.part2 {
             border-right: 3px solid #ffffff;
             animation: 
-                typing 2s steps(40) 3.5s forwards,
+                typing 1.5s steps(40) 3.5s forwards,       /* Réduit de 2s à 1.5s */
                 blink-caret 0.75s step-end infinite 3.5s,
-                hide-caret 0s linear 5.5s forwards;  /* Nouveau: cache le curseur après 5.5s */
+                hide-caret 0s linear 5.5s forwards;        /* Ajusté à 5.5s */
+        }
+
+        .typing-text.part3 {
+            border-right: 3px solid #ffffff;
+            animation: 
+                typing 1.5s steps(40) 6s forwards,         /* Réduit de 2s à 1.5s */
+                blink-caret 0.75s step-end infinite 6s,
+                hide-caret 0s linear 8s forwards;          /* Ajusté à 8s */
         }
 
         /* Ajouter cette nouvelle animation pour cacher le curseur */
@@ -250,14 +258,15 @@ def display_matrix_animation():
             <div class="matrix-animation">
                 <div class="matrix-rain">{rain_content}</div>
                 <div class="disclaimer-box">
-                    <div class="typing-text part1" style="color: white;">Application développée pour ma candidature au BUT Science des Données</div>
-                    <div class="typing-text part2" style="color: white;">Technologies utilisées : Python, Streamlit, Data Analysis</div>
+                    <div class="typing-text part1" style="color: white;">Composition du projet : 16 fichiers Python, 5 CSS, 11 autres.</div>
+                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code : +3 078.</div>
+                    <div class="typing-text part3" style="color: white;">Temps de travail estimé : Donnée non disponible.</div>
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
                 </div>
                 <div class="loading-bar-container">
-                    <div class="loading-bar" style="animation: loading 7s ease-in-out forwards, gradient-shift 1.5s linear infinite;"></div>
+                    <div class="loading-bar" style="animation: loading 9s ease-in-out forwards, gradient-shift 1.5s linear infinite;"></div>
                 </div>
             </div>
         """
@@ -271,7 +280,7 @@ def display_matrix_animation():
         "Bienvenue dans la Matrice"
     ]
     
-    delays = [1.5, 1.5, 1.5, 1.5, 1.0]  # Total: 7s
+    delays = [2.0, 1.75, 1.75, 1.75, 1.75]  # Total: 9s
     
     # Utiliser la même pluie pour tous les messages
     for message, delay in zip(messages, delays):
