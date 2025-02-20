@@ -160,6 +160,7 @@ def apply_dark_theme():
     .stTabs [data-baseweb="tab-highlight"] {{
         display: none;
     }}
+
     </style>
     """
     

@@ -4,6 +4,8 @@ from PIL import Image
 from pathlib import Path
 import json
 import pandas as pd
+import base64
+from io import BytesIO
 
 # Définition du chemin racine du projet
 project_root = Path(__file__).parent
@@ -19,6 +21,7 @@ from content.lettre_motivation_content import get_lettre_motivation_content, get
 from components.admission_prediction import (
     load_data, 
     display_summary_stats,
+    display_explain_stats,
     display_prediction_interface,
     display_global_interface,
     display_conseils,
@@ -52,6 +55,12 @@ def write_text_slowly(text):
         placeholder.markdown(f"### {text[:i]}▌")
         time.sleep(0.03)
     placeholder.markdown(f"### {text}")
+
+# Après l'ouverture de l'image, avant l'affichage du popup
+def image_to_base64(img):
+    buffered = BytesIO()
+    img.save(buffered, format="JPEG")
+    return base64.b64encode(buffered.getvalue()).decode()
 
 # Modifier la fonction main() pour ajouter un état de navigation
 def main():
@@ -100,28 +109,15 @@ def main():
         selection = st.radio(
             "",
             ["🏠 Accueil",
+             "📄 Lettre de recommandation",  
              "📊 Data Project",
              "🔧 Projet Perso",
              "✨ Quiz",
-             "👤 Présentation",]
+             "👤 Présentation"]
         )
         
         st.session_state.selection = selection
         
-        # Lettre de recommandation directement après le menu
-        st.markdown("### 📄 Lettre de recommandation")
-        try:
-            if "lettre_agrandie" not in st.session_state:
-                st.session_state.lettre_agrandie = False
-            
-            lettre = Image.open(".assets/lettre_recommandation.jpg")
-            st.image(lettre, width=200, caption="Lettre de recommandation")
-            if st.button("📄 Voir en plein écran"):
-                st.session_state.lettre_agrandie = True
-        except Exception as e:
-            print(f"Erreur lors du chargement de la lettre: {str(e)}")
-            st.error("Lettre de recommandation non disponible")
-
         st.markdown("---")
         
         # Formations en dernier
@@ -135,23 +131,6 @@ def main():
         - École Nationale des Scaphandriers
         - Expérience professionnelle
         """)
-
-    # Affichage plein écran de la lettre si demandé
-    if st.session_state.get('lettre_agrandie', False):
-        # Création d'une overlay pour l'image en plein écran
-        overlay_container = st.container()
-        with overlay_container:
-            col1, col2, col3 = st.columns([1, 6, 1])
-            with col2:
-                try:
-                    lettre = Image.open(".assets/lettre_recommandation.jpg")
-                    st.image(lettre, use_container_width=True)
-                    if st.button("❌ Fermer", key="close_fullscreen"):
-                        st.session_state.lettre_agrandie = False
-                        st.rerun()
-                except Exception as e:
-                    st.error("Impossible d'afficher la lettre en plein écran")
-                    print(f"Erreur: {e}")
 
     # Contenu principal basé sur la sélection
     if selection == "🏠 Accueil":
@@ -187,6 +166,12 @@ def main():
                         margin: 0 0 2rem 0;
                     ">De la profondeur des océans à la profondeur des données... 🌊➡️📊</h3>
                 """, unsafe_allow_html=True)
+
+        # Ajouter une div conteneur avec la classe personnalisée
+        with st.expander("⚠️ **Note importante**"):
+            st.markdown(get_note_importante(), unsafe_allow_html=True)
+
+    
 
         with col2:
             try:
@@ -230,13 +215,12 @@ def main():
                 margin: 1rem 0;
                 line-height: 1.2;
             ">
-                📜 Ma Lettre de Motivation
+                📜 Lettre de Motivation
             </h2>
         """, unsafe_allow_html=True)
         
-        # Contenu de la lettre et note
+        # Contenu de la lettre 
         st.markdown(get_lettre_motivation_content())
-        st.markdown(get_note_importante(), unsafe_allow_html=True)
 
     elif selection == "👤 Présentation":
 
@@ -249,7 +233,7 @@ def main():
                 font-size: 2.5em;
                 margin: 0 0 1.5rem 0;
                 color: inherit;
-            ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
+            ">🎮 Concept PC Gaming adapté au client</h1>
         """, unsafe_allow_html=True)
         display_project_concept(show_title=False)  # Nouveau paramètre pour éviter le doublon
         
@@ -278,7 +262,9 @@ def main():
                 # 2. Display summary stats
                 display_summary_stats(df)
                 
-                # 3. Show expander
+                # 3. Show expanders
+                display_explain_stats(df)
+
                 with st.expander("ℹ️ Comment fonctionne le modèle de prédiction ?"):
                     st.markdown("""
                     ### Comment sont calculées vos chances d'admission ?
@@ -308,7 +294,7 @@ def main():
                     #### Calcul final
                     La probabilité finale est calculée en multipliant :
                     ```
-                    `Probabilité = Taux de proposition × Bonus mention × Bonus boursier`
+                    Probabilité = Taux de proposition × Bonus mention × Bonus boursier
                     ```
 
                     #### Important à noter
@@ -335,6 +321,26 @@ def main():
         except Exception as e:
             st.error(f"Erreur lors du chargement des données: {str(e)}")
             print(f"Erreur détaillée: {e}")
+
+    elif selection == "📄 Lettre de recommandation":
+        st.markdown("""
+            <h1 style="
+                font-size: 2.5em;
+                margin: 0 0 1.5rem 0;
+                color: inherit;
+            ">📄 Lettre de recommandation</h1>
+        """, unsafe_allow_html=True)
+        
+        # Centrer l'image
+        col1, col2, col3 = st.columns([1, 3, 1])
+        with col2:
+            try:
+                # Charger et afficher l'image
+                lettre = Image.open(".assets/lettre_recommandation.jpg")
+                st.image(lettre, width=1100)
+                
+            except Exception as e:
+                st.error("Lettre de recommandation non disponible")
     
     # Footer
     st.markdown("---")

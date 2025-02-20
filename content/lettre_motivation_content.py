@@ -52,42 +52,28 @@ def get_note_importante():
     """Retourne le contenu de la note importante."""
     return """
         <div style="
-            background-color: #7f1d1d;
-            border: 2px solid #ef4444;
+            background-color: rgba(28, 31, 38, 0.7);
+            border: 1px solid rgba(96, 165, 250, 0.2);
             border-radius: 12px;
             padding: 25px;
-            margin: 30px 0;
-            color: #fecaca;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            margin: 20px 0;
+            color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
         ">
-            <div style="
-                font-size: 1.3em;
-                font-weight: bold;
-                margin-bottom: 16px;
-                padding-bottom: 12px;
-                border-bottom: 1px solid #ef4444;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: #fee2e2;
-            ">
-                ⚠️ Note importante
-            </div>
             <div style="
                 background-color: rgba(0, 0, 0, 0.2);
                 padding: 20px;
                 border-radius: 8px;
-                border: 1px solid rgba(239, 68, 68, 0.3);
+                border: 1px solid rgba(96, 165, 250, 0.2);
             ">
                 <p style="line-height: 1.7; margin-bottom: 16px;">
-                Je tiens à préciser que je n'ai pas créé cette application pour mettre en avant mes compétences en programmation, j'aurais été
-                bien incapable de la réaliser sans l'aide d'ia génératives. Pour autant je considère ces dernières comme un outil dont il serait dommage de ne pas se servir
-                plutôt que comme une façon de "tricher".
+                Tout d'abord, merci d'avoir pris le temps de venir découvrir ce projet. En espérant qu'il vous plaira.
+                </p>  
+                <p style="line-height: 1.7; margin-bottom: 16px;">  
+                Cette application n'a pas été développée pour mettre en avant des compétences en programmation mais pour démarquer une candidature de façon innovante. Des IA génératives sont utilisées, (Github Copilot, Claude 3.5 Sonnet) et le sont pour ce qu'elles sont et doivent rester : des outils d'aide à la décision et à la conception.
                 </p>
                 <p style="line-height: 1.7; margin: 0;">
-                Le véritable objectif était de me démarquer en illustrant l'investissement que je mets dans mes projets
-                et mon désir de rejoindre votre établissement. J'ai toujours pensé qu'il est préférable d'agir que de parler. J'espère que vous aurez pris le
-                temps de me lire jusqu'ici et que cela vous aura convaincu car j'y ai consacré beaucoup de temps et d'efforts. Ce qui est sûr, c'est que ce projet m'a permis d'apprendre énormément et j'ai pris beaucoup de plaisir ! Merci 😊
+                Nous vivons à une époque où tout semble possible. À partir d'une simple idée et de la détermination, il est désormais possible de concrétiser un projet dans son intégralité, même sans maîtriser toutes les compétences requises, tout en apprenant au fur et à mesure. Pour moi, rien n'est plus excitant que de repousser mes propres limites et celles de la technologie chaque jour, dans le but de créer de nouvelles choses. C'est comme qu'est née cette application.
                 </p>
             </div>
         </div>

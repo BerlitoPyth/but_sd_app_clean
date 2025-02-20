@@ -6,14 +6,13 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Réponses préenregistrées dans un format plus accessible
 PREDEFINED_RESPONSES = {
-    "pourquoi le but sd": """La science des données est un domaine en pleine expansion, au cœur de l'innovation, et c'est précisément ce qui m'attire.
-Je suis passionné par les mathématiques et l'informatique, et j'ai toujours aimé jouer avec les chiffres. Ce qui me motive particulièrement, c'est d'apprendre à « faire parler les données ».""",
+    "but sd": """La science des données est un domaine en pleine expansion, au cœur de l'innovation, et c'est précisément ce qui m'attire. Je suis passionné par LA mathématique et l'informatique, et j'ai toujours aimé jouer avec les chiffres. Ce qui me motive particulièrement, c'est d'apprendre à « faire parler les données ».""",
     
-    "quel est ton parcours": """J'ai commencé en terminale STI2D, que j'ai quittée en cours d'année, avant de passer par la piscine de l'école 42.
-Après un détour par l'entrepreneuriat et un diplôme à l'École Nationale des Scaphandriers, j'ai décidé de me réorienter vers la science des données.""",
+    "parcours": """Mon parcours est atypique : après un bac STI2D, j'ai exploré la programmation à l'École 42,
+puis je suis devenu scaphandrier professionnel. Cette expérience m'a appris la rigueur et la gestion du stress.
+Aujourd'hui en DAEU B, je consolide mes bases scientifiques pour me réorienter vers la science des données.""",
     
-    "quelles sont tes motivations": """Ma principale motivation est de combiner ma passion pour les mathématiques et l'informatique avec mon désir d'évolution professionnelle.
-Je suis fasciné par la façon dont les données peuvent nous aider à comprendre le monde et à prendre de meilleures décisions."""
+    "motivations": """Ma principale motivation est de combiner ma passion pour les mathématiques et l'informatique avec mon désir d'évolution professionnelle. Je suis fasciné par la façon dont les données peuvent nous aider à comprendre le monde et à prendre de meilleures décisions."""
 }
 
 # Contexte pour OpenAI
@@ -42,13 +41,12 @@ def generate_response(client, message, conversation_history):
     
     # Mapping des questions pour les variations courantes
     question_mapping = {
-        "pourquoi le but sd": "pourquoi le but sd",
-        "quel est ton parcours": "quel est ton parcours",
-        "quelles sont tes motivations": "quelles sont tes motivations",
-        # Ajout des variations avec point d'interrogation
-        "pourquoi le but sd ?": "pourquoi le but sd",
-        "quel est ton parcours ?": "quel est ton parcours",
-        "quelles sont tes motivations ?": "quelles sont tes motivations",
+        "but sd": "but sd",
+        "but sd ?": "but sd",
+        "parcours": "parcours",
+        "parcours ?": "parcours",
+        "motivations": "motivations",
+        "motivations ?": "motivations"
     }
 
     # Vérifier si la question est dans le mapping
@@ -75,154 +73,101 @@ def generate_response(client, message, conversation_history):
         return "Une erreur est survenue, merci de réessayer."
 
 def add_floating_chat_to_app():
-    """Ajoute le chat à l'application"""
     st.markdown("""
         <style>
-        .chat-message {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-            font-size: 0.9rem;
+        /* Hide empty label container */
+        [data-testid="stWidgetLabel"] {
+            display: none !important;
         }
-        
-        .user-message {
-            text-align: right;
-            background-color: #E8F0FF;
-            border: 1px solid #D0E1FF;
-            color: #1F2937;
+
+        /* Optimize vertical spacing */
+        .stTextInput > div {
+            margin-top: 0.5rem !important;
+        }
+
+        .chat-message {
+            padding: 0.5rem 1rem !important;
+            margin: 0.5rem 0 !important;
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+            border-radius: 8px !important;
         }
         
         .bot-message {
-            text-align: left;
-            background-color: #F3F4F6;
-            border: 1px solid #E5E7EB;
-            color: #1F2937;
+            background: rgba(28, 31, 38, 0.7) !important;
+            border: 1px solid rgba(96, 165, 250, 0.2) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
         }
 
-        /* Style des boutons */
-        .stButton > button {
-            background-color: #F3F4F6;
-            color: #1F2937;
-            border: 1px solid #E5E7EB;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+        /* Reduce button container spacing */
+        .row-widget.stHorizontal {
+            gap: 0.25rem !important;
+            margin-bottom: 0.75rem !important;
         }
 
-        .stButton > button:hover {
-            background-color: #E5E7EB;
-            border-color: #D1D5DB;
-        }
-
-        /* Style de l'input */
-        .stTextInput > div > div > input {
-            border-radius: 0.5rem;
-            border: 1px solid #E5E7EB;
-            color: #1F2937;
-        }
-
-        /* Hide empty labels only in chat input */
-        .stTextInput [data-testid="stWidgetLabel"]:empty,
-        .stTextInput .st-emotion-cache-aoyl2m:empty,
-        .stTextInput div[data-testid="stMarkdownContainer"]:empty {
-            display: none !important;
-            height: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        /* Keep other elements visible */
-        .block-container {
-            display: block !important;
-        }
-
-        /* Ensure chat components are visible */
-        .chat-message,
-        .stButton,
-        .stTextInput {
-            display: block !important;
-            visibility: visible !important;
-        }
-
-        /* Style spécifique pour les boutons de questions prédéfinies */
-        .stButton > button {
-            background-color: #1a1d23 !important;  /* Même couleur que sidebar_bg */
+        /* Compact input field with better styling */
+        .stTextInput input {
+            padding: 0.5rem 1rem !important;
+            height: 2.5rem !important;
+            background: rgba(28, 31, 38, 0.7) !important;
+            border: 1px solid rgba(96, 165, 250, 0.2) !important;
+            border-radius: 6px !important;
             color: white !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            transition: all 0.2s ease !important;
+            font-size: 0.95rem !important;
         }
 
-        /* Effet hover sur les boutons */
-        .stButton > button:hover {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            transform: translateX(4px);
+        .stTextInput input:focus {
+            border-color: rgba(96, 165, 250, 0.5) !important;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.1) !important;
         }
 
-        /* S'assurer que le texte des boutons reste blanc */
-        .stButton > button p,
-        .stButton > button span,
-        .stButton > button div {
-            color: white !important;
-        }
-
-        /* Ajuster les marges des boutons pour un meilleur espacement */
-        .stButton {
-            margin: 0.25rem 0 !important;
+        /* Style for the robot emoji */
+        .bot-message .emoji {
+            margin-right: 0.5rem !important;
+            opacity: 0.8 !important;
         }
         </style>
     """, unsafe_allow_html=True)
-        
-    # Initialize session state first
+
+    # Initialize session state
     if "messages" not in st.session_state:
         st.session_state.messages = []
-    
-    # Limit messages to last question and answer (max 2 messages)
-    if len(st.session_state.messages) > 2:
-        st.session_state.messages = st.session_state.messages[-2:]
 
-    # Affichage des messages existants
-    for msg in st.session_state.messages:
-        is_user = msg["role"] == "user"
-        st.markdown(
-            f"""<div class="chat-message {'user-message' if is_user else 'bot-message'}">
-                {'' if is_user else '🤖 '}{msg['content']}
-            </div>""", 
-            unsafe_allow_html=True
-        )
-
-    # Entrée utilisateur (removed the "Vous:" label)
-    user_input = st.text_input("", key="chat_input", placeholder="Posez votre question ici...")
-    
-    # Gestion des boutons de questions suggérées
+    # Predefined question buttons first
     col1, col2, col3 = st.columns(3)
     
-    button_clicked = False
-    if col1.button("Pourquoi le BUT SD ?"):
-        user_input = "Pourquoi le BUT SD ?"
-        button_clicked = True
-    if col2.button("Ton parcours ?"):
-        user_input = "Quel est ton parcours ?"
-        button_clicked = True
-    if col3.button("Tes motivations ?"):
-        user_input = "Quelles sont tes motivations ?"
-        button_clicked = True
-
-    # Traitement de l'entrée (soit par texte soit par bouton)
-    if user_input and (button_clicked or st.session_state.get("last_input") != user_input):
-        # Réinitialiser les messages pour ne garder que la dernière interaction
-        st.session_state.messages = []
-        
-        # Ajouter le nouveau message
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        
-        try:
-            # Obtenir la réponse
-            response = generate_response(client, user_input, [])  # Plus besoin de l'historique
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            st.session_state["last_input"] = user_input
-            
-        except Exception as e:
-            st.error(f"Erreur: {str(e)}")
-        
+    if col1.button("BUT SD ?"):
+        response = PREDEFINED_RESPONSES["but sd"]
+        st.session_state.messages = [{"role": "assistant", "content": response}]
         st.rerun()
+    if col2.button("Parcours ?"):
+        response = PREDEFINED_RESPONSES["parcours"]
+        st.session_state.messages = [{"role": "assistant", "content": response}]
+        st.rerun()
+    if col3.button("Motivations ?"):
+        response = PREDEFINED_RESPONSES["motivations"]
+        st.session_state.messages = [{"role": "assistant", "content": response}]
+        st.rerun()
+
+    # Input field below buttons
+    user_input = st.text_input("", key="chat_input", placeholder="Posez moi une autre question...")
+    
+    # Process user input for chatbot
+    if user_input and st.session_state.get("last_input") != user_input:
+        st.session_state.last_input = user_input
+        response = generate_response(client, user_input, st.session_state.messages)
+        if response:
+            st.session_state.messages = [
+                {"role": "assistant", "content": response}
+            ]
+
+    # Display bot response
+    for msg in st.session_state.messages:
+        if msg["role"] == "assistant":
+            st.markdown(
+                f"""<div class="chat-message bot-message">
+                    <span class="emoji">🤖</span>{msg['content']}
+                </div>""", 
+                unsafe_allow_html=True
+            )

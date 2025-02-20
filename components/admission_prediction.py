@@ -215,6 +215,31 @@ def display_summary_stats(data):
                 </p>
             </div>
         """, unsafe_allow_html=True)
+        
+def display_explain_stats(data):
+    """Affiche l'explication du jeu de données dans un expander"""
+    with st.expander("📊 À propos des données utilisées"):
+        st.markdown("""
+            <div style='
+                background: rgba(28, 31, 38, 0.7);
+                border: 1px solid rgba(96, 165, 250, 0.2);
+                border-radius: 6px;
+                padding: 10px;
+                margin: 0;
+                color: rgba(255, 255, 255, 0.9);
+            '>
+                <p style='
+                    line-height: 1.4;
+                    margin: 0;
+                    font-size: 0.9em;
+                '>
+                    Le jeu de données utilisé regroupe les vœux et admissions des candidats sur Parcoursup 2024, 
+                    hors apprentissage. Il inclut 978 200 candidats et 14 079 formations, avec des indicateurs 
+                    sur les vœux, les propositions d'admission, le profil des admis et le rythme des admissions. 
+                    Une visualisation graphique accompagne ces données pour une meilleure compréhension. Source : Parcoursup
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
 def display_prediction_interface(data, show_title=True):
     """Interface de prédiction des chances de recevoir une proposition"""

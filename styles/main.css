@@ -212,3 +212,81 @@ div[data-testid="column"]:has(button:contains("Thème")) {
     border-color: #334155 !important;
     border-radius: 8px !important;
 }
+
+/* Style personnalisé pour l'expander Note importante */
+.important-note-expander {
+    background: linear-gradient(90deg, rgba(96, 165, 250, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    padding: 0.5rem;
+}
+
+/* Style pour le titre de l'expander */
+.important-note-expander [data-testid="stExpander"] {
+    border: none !important;
+    background: transparent !important;
+}
+
+.important-note-expander [data-testid="stExpanderToggleIcon"] {
+    color: #60a5fa !important;
+    font-size: 1.2em;
+}
+
+/* Animation subtile au survol */
+.important-note-expander:hover {
+    border-color: rgba(96, 165, 250, 0.5);
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1);
+}
+
+/* Style pour l'expander Note importante */
+[data-testid="stExpander"] {
+    background: linear-gradient(90deg, rgba(96, 165, 250, 0.1) 0%, rgba(96, 165, 250, 0.05) 100%);
+    border: 1px solid rgba(96, 165, 250, 0.3) !important;
+    border-radius: 8px !important;
+    margin: 1.5rem 0 !important;
+    padding: 0.5rem !important;
+}
+
+[data-testid="stExpander"]:hover {
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1);
+}
+
+/* Style pour le titre de l'expander */
+[data-testid="stExpander"] > div:first-child {
+    border: none !important;
+    background: transparent !important;
+}
+
+[data-testid="stExpanderToggleIcon"] {
+    color: #60a5fa !important;
+    font-size: 1.2em !important;
+}
+
+/* Style pour le contenu de l'expander */
+[data-testid="stExpander"] .streamlit-expanderContent {
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+
+/* Minimize expander vertical spacing */
+[data-testid="stExpander"] {
+    margin: 0.25rem 0 !important;
+}
+
+/* Reduce padding inside expanders */
+[data-testid="stExpander"] > div:first-child {
+    padding: 0.25rem !important;
+}
+
+/* Reduce gap between expander header and content */
+.streamlit-expanderContent {
+    padding-top: 0.25rem !important;
+}
+
+/* Remove extra margins from content inside expanders */
+[data-testid="stExpander"] .element-container {
+    margin: 0 !important;
+}

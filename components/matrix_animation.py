@@ -260,7 +260,7 @@ def display_matrix_animation():
                 <div class="disclaimer-box">
                     <div class="typing-text part1" style="color: white;">Composition du projet : 16 fichiers Python, 5 CSS, 11 autres.</div>
                     <div class="typing-text part2" style="color: white;">Nombre total de lignes de code : +3 078.</div>
-                    <div class="typing-text part3" style="color: white;">Temps de travail estimé : Donnée non disponible.</div>
+                    <div class="typing-text part3" style="color: white;">Temps de travail estimé : Indéterminé.</div>
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
