@@ -2,18 +2,31 @@ import streamlit as st
 from PIL import Image
 
 def display_project_concept(show_title=True):
-    """
-    Affiche le concept du projet
-    :param show_title: Boolean pour contrôler l'affichage du titre
-    """
+    """Affiche les différents projets"""
+    
     if show_title:
         st.markdown("""
             <h1 style="
                 margin-top: 0 !important;
                 padding-top: 0 !important;
                 margin-bottom: 1.5rem !important;
-            ">🎮 Concept PC Gaming adapté aux réels besoins du client</h1>
+            ">🔧 Projets Personnels</h1>
         """, unsafe_allow_html=True)
+    
+    # Création des tabs
+    tab1, tab2 = st.tabs(["🎮 Gaming For All", "🎲 Le Plus Proche Gagne"])
+    
+    with tab1:
+        display_gaming_project()
+        
+    with tab2:
+        display_board_game_project()
+
+def display_gaming_project(show_title=True):
+    """
+    Affiche le concept du projet
+    :param show_title: Boolean pour contrôler l'affichage du titre
+    """
         
     # Genèse du projet
     st.header("💡 Genèse du Projet")
@@ -186,6 +199,78 @@ def display_project_concept(show_title=True):
         st.metric(label="Performances comparées aux PC de grandes enseignes en moyenne", value="+20%", delta="20 FPS")
     with col2:
         st.metric(label="Économie Moyenne", value="210€", delta="par configuration")
+
+def display_board_game_project():
+    """Contenu du projet Le Plus Proche Gagne"""
+    st.header("🎲 Le Plus Proche Gagne")
+    with st.expander("Tout savoir", expanded=True):
+        st.markdown("""
+        ### 💡 Genèse du Projet
+        Lors d'une soirée dans un bar à jeux avec ma copine, nous avons découvert un jeu de société 
+        nommé "Le Plus Proche Gagne". Nous avons adoré le concept et j'ai décidé de recréer le jeu pour animer nos soirées.
+        
+        ### 🏅 Principe du jeu
+        Un jeu de culture générale basé sur l'estimation, où le plus proche de la bonne réponse remporte la victoire !
+
+        
+        
+        ### 🎯 Les 9 thèmes
+        - ⚽ L'athlète        
+        - 🌍 Le globe-trotteur
+        - 🎬 Le fan 
+        - 📚 L'érudit
+        - 🃏 Le loufoque 
+        - 📜 L'historien 
+        - 🦁 L'observateur 
+        - 👔 Le ministre 
+        - 🔬 Le scientifique
+
+        ### 📜 Déroulement
+        1. Chaque joueur choisit 3 médailles pour démarrer
+        2. Le joueur actif choisit un thème disponible
+        3. Une question numérique est posée
+        4. Tous les joueurs répondent simultanément
+        5. Le plus proche remporte la médaille du thème
+        6. Si déjà possédée, la médaille devient sécurisée
+
+        ### 🏆 Victoire
+        - La partie se termine quand toutes les médailles sont sécurisées
+        - Le joueur avec le plus de médailles l'emporte
+
+        ### ⚡ Avantages
+        - Génération illimitée de questions grâce à l'IA
+        - Mode en ligne pour jouer à distance
+        - Base de données évolutive            
+        """)
+
+    st.header("🎮 Gameplay")
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        try:
+            video_file = open(".assets/gameplay_demo.mp4", "rb")
+            video_bytes = video_file.read()
+            st.video(video_bytes, start_time=0)
+        except Exception as e:
+            st.markdown("""
+                <div style='
+                    background: rgba(28, 31, 38, 0.7);
+                    border: 1px solid rgba(96, 165, 250, 0.2);
+                    border-radius: 8px;
+                    padding: 15px;
+                    text-align: center;
+                    margin: 10px 0;
+                '>
+                    🎥 Démo du gameplay en cours de production
+                </div>
+            """, unsafe_allow_html=True)
+
+    # État du développement
+    st.header("📈 État d'avancement")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(label="Questions générées", value="1500+", delta="Base évolutive")
+    with col2:
+        st.metric(label="Version en ligne", value="60%", delta="En développement")
 
 if __name__ == "__main__":
     st.set_page_config(page_title="Projet PC Gaming", layout="wide")

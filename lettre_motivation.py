@@ -233,7 +233,7 @@ def main():
                 font-size: 2.5em;
                 margin: 0 0 1.5rem 0;
                 color: inherit;
-            ">🎮 Concept PC Gaming adapté au client</h1>
+            ">🔧 Créations originales</h1>
         """, unsafe_allow_html=True)
         display_project_concept(show_title=False)  # Nouveau paramètre pour éviter le doublon
         
