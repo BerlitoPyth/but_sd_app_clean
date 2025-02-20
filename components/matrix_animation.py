@@ -17,8 +17,8 @@ def display_matrix_animation():
         }
 
         @keyframes rain-fall {
-            from { transform: translateY(-100%) translateZ(0); }
-            to { transform: translateY(100vh) translateZ(0); }
+            from { transform: translateY(-100%); }
+            to { transform: translateY(100vh); }
         }
 
         /* Combine les effets de lueur en une seule animation */
@@ -33,16 +33,32 @@ def display_matrix_animation():
             }
         }
 
+        /* Modifier les animations pour les caractères qui tombent */
+        @keyframes binary-change {
+            0%, 100% { content: "1"; }
+            50% { content: "0"; }
+        }
+
         .rain-char {
             display: block;
             text-align: center;
-            animation: binary-flicker 0.5s steps(2) infinite;
+            color: #00FF41;
+            opacity: 0.8;
+            text-shadow: 0 0 2px #0f0;
+            transition: transform 0.3s ease;
+            font-family: 'Share Tech Mono', monospace;
         }
 
-        /* Supprimer l'animation glow redondante de .rain-char */
+        /* Ajouter une animation d'apparition progressive */
+        @keyframes fade-in-out {
+            0% { opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; }
+        }
+
         .matrix-animation {
             font-family: 'Courier New', monospace;
-            background-color: #000;
+            background-color: rgba(0, 0, 0, 0.95);
             color: #0f0;
             position: fixed;
             top: 0;
@@ -51,6 +67,7 @@ def display_matrix_animation():
             height: 100vh;
             z-index: 9999;
             overflow: hidden;
+            will-change: opacity;
         }
         
         .matrix-rain {
@@ -64,18 +81,25 @@ def display_matrix_animation():
         
         .rain-column {
             position: absolute;
-            width: 1em;
+            width: 1.5em;  /* Augmenté pour les caractères japonais */
             color: #0f0;
             font-size: 1.2em;
             text-shadow: 0 0 2px #0f0;
             white-space: pre;
             opacity: 0.5;
-            font-family: monospace;
-            animation: rain-fall 10s linear infinite;
+            font-family: 'Share Tech Mono', monospace;
+            animation: rain-fall 8s linear infinite;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             will-change: transform;
+        }
+
+        .rain-char {
+            animation: 
+                binary-change 1s steps(1) infinite,
+                fade-in-out 4s ease-in-out infinite;
+            transition: all 0.3s ease;
         }
 
         /* Supprimer l'animation glow redondante du message-container */
@@ -90,9 +114,12 @@ def display_matrix_animation():
         
         .message-text {
             font-size: 2em;
-            color: #ffffff;
             text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
-            animation: messageAppear 0.5s ease-out forwards;
+            animation: messageAppear 0.5s ease-out forwards, glow-pulse 2s infinite;
+            background: linear-gradient(90deg, #ffffff 0%, #00FF41 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             opacity: 0;
             font-weight: 800;
             letter-spacing: 1.2px;
@@ -144,13 +171,12 @@ def display_matrix_animation():
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, 
-                #00FF41 0%, 
-                #00AA30 50%, 
-                #00FF41 100%);
+                #00FF41, 
+                #32CD32);
             background-size: 200% 100%;
             animation: 
-                loading 9s ease-in-out forwards,  /* Updated duration */
-                gradient-shift 1.5s linear infinite;
+                loading 9s ease-in-out forwards,
+                gradient-shift 2s linear infinite;
             box-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
         }
         
@@ -166,14 +192,17 @@ def display_matrix_animation():
             left: 50%;
             transform: translateX(-50%);
             width: 800px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00FF41;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid transparent;
             border-radius: 5px;
             padding: 15px;
             color: #fff;
-            font-size: 1em;
+            font-size: 1.2em;  /* Increased from 1em */
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
             z-index: 10002;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+            backdrop-filter: blur(5px);
+            animation: glow-border 4s infinite;
         }
 
         .typing-text {
@@ -226,25 +255,49 @@ def display_matrix_animation():
             from, to { border-color: transparent; }
             50% { border-color: #ffffff; }
         }
+
+        /* Nouvelles animations et styles */
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 5px #0f0, 0 0 10px #0f0; }
+            50% { text-shadow: 0 0 20px #0f0, 0 0 30px #0f0; }
+        }
+
+        .matrix-animation::before {
+            display: none;
+        }
+
+        @keyframes glow-border {
+            0%, 100% { border-color: #00FF41; }
+            50% { border-color: #98FB98; }
+        }
         </style>
     """, unsafe_allow_html=True)
 
     def create_binary_rain():
+        """Version optimisée de la pluie matricielle avec symboles japonais"""
+        # Mélange de chiffres et caractères japonais simples
+        characters = "10あめアメ天雨"  # Nombres + symboles japonais pour 'pluie' et 'ciel'
         lines = []
-        num_columns = 20
+        num_columns = 20  # Réduit pour performance
+        
         for i in range(num_columns):
-            # Génération des caractères avec délais différents
+            # Création de la colonne avec rotation
             column = ''.join([
-                f'<span class="rain-char">{random.choice("10")}</span>'
-                for _ in range(20)
+                f'''<span class="rain-char" style="
+                    transform: rotate({random.choice([-30, 0, 30])}deg);
+                    animation-delay: {random.uniform(0, 2)}s;
+                ">{random.choice(characters)}</span>'''
+                for _ in range(15)  # Moins de caractères par colonne
             ])
             
             left_position = (i * (100 / num_columns))
+            speed = random.uniform(6, 10)
+            
             lines.append(f'''
             <div class="rain-column" style="
                 left: {left_position}%; 
-                animation-delay: -{random.uniform(0, 10)}s;
-                animation-duration: 10s;
+                animation: rain-fall {speed}s linear infinite;
+                animation-delay: -{random.uniform(0, 3)}s;
             ">{column}</div>
             ''')
         return ''.join(lines)
@@ -258,9 +311,9 @@ def display_matrix_animation():
             <div class="matrix-animation">
                 <div class="matrix-rain">{rain_content}</div>
                 <div class="disclaimer-box">
-                    <div class="typing-text part1" style="color: white;">Composition du projet : 16 fichiers Python, 5 CSS, 11 autres.</div>
-                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code : +3 078.</div>
-                    <div class="typing-text part3" style="color: white;">Temps de travail estimé : Indéterminé.</div>
+                    <div class="typing-text part1" style="color: white;">Composition du projet<span style="color: #00FF41;">:</span> <strong>16 fichiers Python, 5 CSS, 11 autres</strong></div>
+                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code<span style="color: #00FF41;">:</span> <strong>+3 078</strong></div>
+                    <div class="typing-text part3" style="color: white;">Temps de travail estimé<span style="color: #00FF41;">:</span> <strong>Erreur 404</strong></div>
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
