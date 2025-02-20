@@ -203,26 +203,16 @@ def display_gaming_project(show_title=True):
 def display_board_game_project():
     """Contenu du projet Le Plus Proche Gagne"""
     st.header("🎲 Le Plus Proche Gagne")
-    col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        try:
-            video_file = open(".assets/gameplay_demo.mp4", "rb")
-            video_bytes = video_file.read()
-            st.video(video_bytes, start_time=0)
-        except Exception as e:
-            st.markdown("""
-                <div style='
-                    background: rgba(28, 31, 38, 0.7);
-                    border: 1px solid rgba(96, 165, 250, 0.2);
-                    border-radius: 8px;
-                    padding: 15px;
-                    text-align: center;
-                    margin: 10px 0;
-                '>
-                    🎥 Démo du gameplay en cours de production
-                </div>
-            """, unsafe_allow_html=True)
-    with st.expander("En savoir plus", expanded=True):
+    with st.expander("ℹ️ **En savoir plus**", expanded=False):
+        st.markdown("""
+        <style>
+            .big-font {
+                font-size: 1.2em !important;
+                font-weight: 500 !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+    
         st.markdown("""
         ### 💡 Genèse du Projet
         Lors d'une soirée dans un bar à jeux avec ma copine, nous avons découvert un jeu de société 
@@ -260,7 +250,26 @@ def display_board_game_project():
         - Génération illimitée de questions grâce à l'IA
         - Mode en ligne pour jouer à distance
         - Base de données évolutive            
-        """)    
+        """)
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        try:
+            video_file = open(".assets/gameplay_demo.mp4", "rb")
+            video_bytes = video_file.read()
+            st.video(video_bytes, start_time=0)
+        except Exception as e:
+            st.markdown("""
+                <div style='
+                    background: rgba(28, 31, 38, 0.7);
+                    border: 1px solid rgba(96, 165, 250, 0.2);
+                    border-radius: 8px;
+                    padding: 15px;
+                    text-align: center;
+                    margin: 10px 0;
+                '>
+                    🎥 Démo du gameplay en cours de production
+                </div>
+            """, unsafe_allow_html=True)
 
     # État du développement
     st.header("📈 État d'avancement")
