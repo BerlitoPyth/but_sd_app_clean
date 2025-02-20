@@ -73,7 +73,7 @@ def get_note_importante():
                 Cette application n'a pas été développée pour mettre en avant des compétences en programmation mais pour démarquer une candidature de façon innovante. Des IA génératives sont utilisées, (Github Copilot, Claude 3.5 Sonnet) et le sont pour ce qu'elles sont et doivent rester : des outils d'aide à la décision et à la conception.
                 </p>
                 <p style="line-height: 1.7; margin: 0;">
-                Nous vivons à une époque où tout semble possible. À partir d'une simple idée et de la détermination, il est désormais possible de concrétiser un projet dans son intégralité, même sans maîtriser toutes les compétences requises, tout en apprenant au fur et à mesure. Pour moi, rien n'est plus excitant que de repousser mes propres limites et celles de la technologie chaque jour, dans le but de créer de nouvelles choses. C'est comme qu'est née cette application.
+                Nous vivons à une époque où tout semble possible. À partir d'une simple idée et de la détermination, il est désormais possible de concrétiser un projet dans son intégralité, même sans maîtriser toutes les compétences requises, tout en apprenant au fur et à mesure. Pour moi, rien n'est plus excitant que de repousser mes propres limites et celles de la technologie chaque jour, dans le but de créer de nouvelles choses. C'est comme ça qu'est née cette application.
                 </p>
             </div>
         </div>
