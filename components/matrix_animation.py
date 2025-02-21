@@ -4,7 +4,22 @@ import time
 
 def display_matrix_animation():
     """Animation style Matrix en plein écran avec effet de pluie amélioré"""
+    # Créer un conteneur vide avec une div de masquage
     loading_container = st.empty()
+    loading_container.markdown("""
+        <div style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 99999;
+        "></div>
+    """, unsafe_allow_html=True)
+    
+    # Attendre un court instant pour s'assurer que le CSS est chargé
+    time.sleep(0.1)
     
     st.markdown("""
         <style>
