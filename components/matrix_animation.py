@@ -285,6 +285,37 @@ def display_matrix_animation():
             0%, 100% { border-color: #00FF41; }
             50% { border-color: #98FB98; }
         }
+
+        .tech-stack-container {
+            position: fixed;
+            bottom: 30%;  /* Déplacé sous la barre de chargement */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            text-align: center;
+            z-index: 10001;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .tech-item {
+            display: inline-block;
+            margin: 0 10px;
+            color: #ffffff;  /* Changé en blanc */
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            animation: techAppear 0.5s ease-out forwards;
+        }
+
+        @keyframes techAppear {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -321,14 +352,27 @@ def display_matrix_animation():
     initial_rain = create_binary_rain()
     
     # Modifier la fonction create_matrix_animation pour utiliser la pluie existante
-    def create_matrix_animation(progress_text, rain_content):
+    def create_matrix_animation(progress_text, rain_content, tech_index=0):
+        technologies = [
+            "Streamlit", "Pandas", "Numpy", "Plotly", 
+            "PIL", "Pathlib", "JSON", "Random", "Time"
+        ]
+        
+        tech_items = "".join([
+            f'<span class="tech-item" style="animation-delay: {i * 0.1}s">{tech}</span>'
+            for i, tech in enumerate(technologies[:tech_index])
+        ])
+        
         return f"""
             <div class="matrix-animation">
                 <div class="matrix-rain">{rain_content}</div>
                 <div class="disclaimer-box">
                     <div class="typing-text part1" style="color: white;">Composition du projet<span style="color: #00FF41;">:</span> <strong>16 fichiers Python, 5 CSS, 11 autres</strong></div>
-                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code<span style="color: #00FF41;">:</span> <strong>+3 078</strong></div>
+                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code<span style="color: #00FF41;">:</span> <strong>> 3 100</strong></div>
                     <div class="typing-text part3" style="color: white;">Temps de travail estimé<span style="color: #00FF41;">:</span> <strong>Erreur 404</strong></div>
+                </div>
+                <div class="tech-stack-container">
+                    {tech_items}
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
@@ -338,7 +382,7 @@ def display_matrix_animation():
                 </div>
             </div>
         """
-    
+
     # Messages et délais
     messages = [
         "Initialisation de la Matrice...",
@@ -349,11 +393,12 @@ def display_matrix_animation():
     ]
     
     delays = [2.0, 1.75, 1.75, 1.75, 1.75]  # Total: 9s
+    tech_count = [2, 4, 6, 7, 9]  # Ajusté pour le nombre réel de technologies
     
     # Utiliser la même pluie pour tous les messages
-    for message, delay in zip(messages, delays):
+    for message, delay, tech_index in zip(messages, delays, tech_count):
         loading_container.markdown(
-            create_matrix_animation(message, initial_rain),
+            create_matrix_animation(message, initial_rain, tech_index),
             unsafe_allow_html=True
         )
         time.sleep(delay)

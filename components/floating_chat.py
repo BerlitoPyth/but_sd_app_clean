@@ -151,7 +151,7 @@ def add_floating_chat_to_app():
         st.rerun()
 
     # Input field below buttons
-    user_input = st.text_input("", key="chat_input", placeholder="Posez moi une autre question...")
+    user_input = st.text_input("", key="chat_input", placeholder="Posez moi une autre question ici...")
     
     # Process user input for chatbot
     if user_input and st.session_state.get("last_input") != user_input:
