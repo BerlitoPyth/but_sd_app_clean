@@ -313,7 +313,7 @@ def display_matrix_animation():
                 <div class="disclaimer-box">
                     <div class="typing-text part1" style="color: white;">Composition du projet<span style="color: #00FF41;">:</span> <strong>16 fichiers Python, 5 CSS, 11 autres</strong></div>
                     <div class="typing-text part2" style="color: white;">Nombre total de lignes de code<span style="color: #00FF41;">:</span> <strong>+3 078</strong></div>
-                    <div class="typing-text part3" style="color: white;">Temps de travail estimé<span style="color: #00FF41;">:</span> <strong>Erreugir 404</strong></div>
+                    <div class="typing-text part3" style="color: white;">Temps de travail estimé<span style="color: #00FF41;">:</span> <strong>Erreur 404</strong></div>
                 </div>
                 <div class="message-container">
                     <div class="message-text">{progress_text}</div>
