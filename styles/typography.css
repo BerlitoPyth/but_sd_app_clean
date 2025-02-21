@@ -1,7 +1,6 @@
 /* Typographie et titres */
 h1 {
     margin-top: 0 !important;  /* Réduit de 3rem à 0 */
-    scroll-margin-top: 0;      /* Réduit de 80px à 0 */
 }
 
 h2 {
@@ -13,7 +12,6 @@ h2 {
     margin-top: 0 !important;     /* Réduit de 3rem à 0 */
     margin-bottom: 1rem;          /* Réduit de 2rem à 1rem */
     padding-top: 0;               /* Réduit de 2rem à 0 */
-    scroll-margin-top: 0;         /* Réduit de 80px à 0 */
 }
 
 .warning-title {

@@ -15,3 +15,10 @@ gatherUsageStats = false
 [client]
 showErrorDetails = true
 toolbarMode = "minimal"
+
+[runner]
+fastRerenderOnChanges = true
+enforceSerializableSessionState = false
+
+[ui]
+scrollToSelectedContent = true

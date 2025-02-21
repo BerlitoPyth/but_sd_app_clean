@@ -34,11 +34,12 @@ def display_presentation(show_title=True):
                     line-height: 1.6;
                 '>
                     <p style='margin-bottom: 1rem;'>
-                        Le développement de cette application reflète ma passion pour la Data Science et la programmation.
-                        Elle combine analyse de données, interface interactive et présentation de ma personne.
+                        Je suis passionné par la Data Science et la programmation,
+                         avec un fort attrait pour l'analyse et la résolution de problèmes. 
+                        Curieux et rigoureux, j’aime explorer de nouvelles technologies et développer des projets concrets.
                     </p>
                     <p>
-                        Je pense que cette réalisation démontre ma capacité à mener un projet de bout en bout,
+                        Je pense que mes réalisations démontrent ma capacité à mener un projet de bout en bout,
                         de l'analyse des besoins à la mise en production, en passant par le développement et le design.
                 </div>
             """, unsafe_allow_html=True)
@@ -245,7 +246,9 @@ def display_presentation(show_title=True):
                     items: [
                         "DAEU B - Équivalent Bac Scientifique",
                         "Spécialisation en Mathématiques",
-                        "Excellent niveau académique"
+                        "Excellent niveau académique",
+                        "Formations certifiantes en Python",
+                        "Veille technologique dans le domaine de la Data Science"
                     ],
                     badge: "En cours"
                 },
@@ -254,8 +257,10 @@ def display_presentation(show_title=True):
                     title: "Expérience Professionnelle",
                     items: [
                         "Plongeur Scaphandrier en Travaux Publics",
-                        "Gestion de projets techniques complexes",
-                        "Travail en équipe et sous pression"
+                        "Gestion de projets techniques",
+                        "Travail en équipe et sous pression",
+                        "Analyse des risques et des besoins",
+                        "Communication avec l'équipe et les clients"
                     ]
                 },
                 {
@@ -267,7 +272,6 @@ def display_presentation(show_title=True):
                         "Rigueur et précision dans le travail",
                         "Détermination et persévérance",
                         "Esprit d'équipe"
-                        
                     ]
                 },
                 {

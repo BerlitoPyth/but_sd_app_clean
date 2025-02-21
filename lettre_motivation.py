@@ -91,17 +91,6 @@ def main():
 
     # Le reste du code principal (sidebar, contenu, etc.)
     with st.sidebar:
-        # Ajout de l'email
-        st.markdown("""
-            <div style='
-                padding: 0.5rem 0;
-                color: #60a5fa;
-                font-size: 0.9em;
-                text-align: center;
-            '>
-                📧 berliatadrien@gmail.com
-            </div>
-        """, unsafe_allow_html=True)
         
         st.title("🎯 Navigation")
         
@@ -150,6 +139,11 @@ def main():
                         margin: 0 0 0.5rem 0;
                         color: inherit;
                     ">Adrien BERLIAT</h2>
+                    <h3 style="
+                        font-size: 1.2em;
+                        margin: 0 0 1rem 0;
+                        color: inherit;
+                    ">📧berliatadrien@gmail.com</h3>
                 </div>
             """, unsafe_allow_html=True)
             
@@ -243,7 +237,7 @@ def main():
                 font-size: 2.5em;
                 margin: 0 0 1.5rem 0;
                 color: inherit;
-            ">Découvrez si nous matchons ! ❤️</h1>
+            ">Découvrez si nous matchons !</h1>
         """, unsafe_allow_html=True)
         display_quiz()
         
@@ -310,7 +304,7 @@ def main():
                 tab1, tab2 = st.tabs(["🎯 Prédiction détaillée", "🌍 Comparaison globale"])
                 
                 with tab1:
-                    st.markdown("⚠️ Ces probabilités représentent vos chances de **recevoir une proposition de l'IUT**, pas d'être accepté définitivement. Ce modèle n'est sans doute pas parfait, j'ai sûrement omis des facteurs, et c'est justement pour ça que je veux rejoindre le BUT SD ! En tout cas, j'ai pris beaucoup de plaisir à le réaliser tout comme cette application. 😊")
+                    st.markdown("⚠️ Ces probabilités représentent vos chances de **recevoir une proposition de l'IUT**, pas d'être accepté définitivement. Ce modèle n'est sans doute pas parfait, j'ai sûrement omis des facteurs, et c'est justement pour ça que je veux rejoindre le BUT SD ! En tout cas, j'ai pris beaucoup de plaisir à le réaliser tout comme cette application.")
                     iut_choice, probability = display_prediction_interface(df, show_title=False)
                     display_profil_feedback(probability)
                 

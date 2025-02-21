@@ -8,13 +8,11 @@
 .main h1:first-of-type {
     margin-top: 0 !important;
     padding-top: 0 !important;
-    scroll-margin-top: 0 !important;
 }
 
 .main h1 {
     margin-top: 2rem !important;
     padding-top: 0.5rem !important;
-    scroll-margin-top: 80px !important;
 }
 
 h2 {
@@ -25,7 +23,6 @@ h2 {
 /* Section Titles */
 .main-section-title {
     margin-top: 3rem !important;
-    scroll-margin-top: 80px;
     opacity: 0;
     transition: opacity 0.5s;
 }
@@ -39,7 +36,6 @@ h2 {
     margin-top: 3rem !important;
     margin-bottom: 2rem;
     padding-top: 2rem;
-    scroll-margin-top: 80px;
 }
 
 /* Navigation */
@@ -290,3 +286,4 @@ div[data-testid="column"]:has(button:contains("Thème")) {
 [data-testid="stExpander"] .element-container {
     margin: 0 !important;
 }
+
