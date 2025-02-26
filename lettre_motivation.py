@@ -12,7 +12,7 @@ project_root = Path(__file__).parent
 
 # Import des composants essentiels uniquement
 from components.theme import apply_dark_theme
-from components.quiz import display_quiz
+from components.projet_data_explorer import display_data_explorer_project
 from components.presentation import display_presentation
 from components.projet_gaming import display_project_concept
 from components.floating_chat import add_floating_chat_to_app  # Changé generate_response pour add_floating_chat_to_app
@@ -101,7 +101,7 @@ def main():
              "📄 Lettre de recommandation",  
              "📊 Data Project",
              "🔧 Projet Perso",
-             "✨ Quiz",
+             "💼 Projets Pro",
              "👤 Présentation"]
         )
         
@@ -231,15 +231,8 @@ def main():
         """, unsafe_allow_html=True)
         display_project_concept(show_title=False)  # Nouveau paramètre pour éviter le doublon
         
-    elif selection == "✨ Quiz":
-        st.markdown("""
-            <h1 style="
-                font-size: 2.5em;
-                margin: 0 0 1.5rem 0;
-                color: inherit;
-            ">Découvrez si nous matchons !</h1>
-        """, unsafe_allow_html=True)
-        display_quiz()
+    elif selection == "💼 Projets Pro":
+        display_data_explorer_project()
         
     elif selection == "📊 Data Project":
         try:
