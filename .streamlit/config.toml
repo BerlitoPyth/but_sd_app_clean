@@ -1,7 +1,7 @@
 [server]
 maxUploadSize = 200
 enableXsrfProtection = false
-port = 8502
+port = 8501
 
 [theme]
 primaryColor = "#00FF41"
@@ -15,10 +15,3 @@ gatherUsageStats = false
 [client]
 showErrorDetails = true
 toolbarMode = "minimal"
-
-[runner]
-fastRerenderOnChanges = true
-enforceSerializableSessionState = false
-
-[ui]
-scrollToSelectedContent = true
