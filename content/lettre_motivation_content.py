@@ -74,7 +74,7 @@ def get_note_importante():
             ">
                 <p style="line-height: 1.7; margin-bottom: 16px;">
                 Tout d'abord, merci d'avoir pris le temps de venir découvrir ce projet.
-                Vous trouverez dans la sidebar un menu pour naviguer entre les différentes pages de l'application.
+                \nVous trouverez dans la sidebar un menu pour naviguer entre les différentes pages de l'application.
                 </p>  
                 <p style="line-height: 1.7; margin-bottom: 16px;">  
                 Cette application n'a pas été développée pour mettre en avant des compétences en programmation mais pour démarquer une candidature de façon innovante.
