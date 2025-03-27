@@ -41,9 +41,10 @@ def get_lettre_motivation_content():
     de FEC qui génère des fichiers comptables de manière aléatoire avec des probabilités de fraude différentes.
     Enfin, j'ai ouvert ma boite de création de site web pour PME et autoentrepreneurs (innovaweb.fr).
 
-    J'ai eu la chance d'échanger par mail avec Monsieur Hébert qui m'a ensuite proposé de venir "bavarder" dans son bureau, j'ai tout de suite compris que ce n'était surement 
-    pas un professeur comme les autres et ait beaucoup apprécié cette approche humaine. J'ai ensuite découvert "ataraxy", une démarche pédagogique très intéressante, ce qui a conforté mon sentiment.
-    Lors des portes ouvertes, j'ai pu rencontrer Mme Nassiet et discuter avec des élèves. Ces échanges ont encore amplifié mon désir de rejoindre votre établissement.
+    Lors des journées portes ouvertes, j'ai beaucoup apprécié l'ambiance générale et l'atmosphère propice à l'apprentissage qui régnait dans l'IUT. Aussi, j'ai eu la chance d'échanger avec
+    des enseignants et étudiants, notamment avec Monsieur Mellouk, qui a gentiment pris le temps de répondre à mes questions, sans oublier la qualité de la présentation de Monsieur Poggi.
+    Cette expérience a d'autant plus renforcé mon envie d'intégrer votre établissement, qui correspond pleinement à mes attentes en termes 
+    d'exigence et de quête d'excellence.
     
     Pour conclure, ma reconversion professionnelle est le fruit d'une réflexion approfondie et je suis convaincu que mon profil atypique 
     et mon désir d'apprendre seront des atouts précieux pour réussir et contribuer activement à la dynamique de votre formation.
