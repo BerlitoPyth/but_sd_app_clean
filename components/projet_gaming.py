@@ -50,6 +50,34 @@ def display_gaming_project(show_title=True):
             try:
                 image = Image.open(".assets/gaming_concept.jpg")
                 st.image(image, caption="Concept PC Gaming")
+                
+                # Ajout de la nouvelle image avec le ruban "Refonte en cours..."
+                st.markdown("""
+                <div style="position: relative; margin-top: 20px;">
+                    <div style="
+                        position: absolute;
+                        top: -5px;
+                        right: -5px;
+                        background-color: #FF4B4B;
+                        color: white;
+                        padding: 5px 10px;
+                        font-size: 0.8em;
+                        font-weight: bold;
+                        transform: rotate(10deg);
+                        z-index: 10;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                        border-radius: 3px;
+                    ">
+                        Refonte en cours...
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                try:
+                    new_image = Image.open(".assets/gaming_concept_new.jpg")
+                    st.image(new_image, caption="Nouvelle version en développement")
+                except:
+                    st.image("https://via.placeholder.com/400x250?text=Nouvelle+Version", caption="Nouvelle version en développement")
             except:
                 st.info("Image non disponible")
 

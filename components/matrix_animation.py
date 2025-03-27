@@ -367,9 +367,9 @@ def display_matrix_animation():
             <div class="matrix-animation">
                 <div class="matrix-rain">{rain_content}</div>
                 <div class="disclaimer-box">
-                    <div class="typing-text part1" style="color: white;">Composition du projet<span style="color: #00FF41;">:</span> <strong>16 fichiers Python, 5 CSS, 11 autres</strong></div>
-                    <div class="typing-text part2" style="color: white;">Nombre total de lignes de code<span style="color: #00FF41;">:</span> <strong>> 3 100</strong></div>
-                    <div class="typing-text part3" style="color: white;">Temps de travail estimé<span style="color: #00FF41;">:</span> <strong>Erreur 404</strong></div>
+                    <div class="typing-text part1" style="color: white;">Profil candidat<span style="color: #00FF41;">:</span> <strong>Autodidacte & Passionné</strong></div>
+                    <div class="typing-text part2" style="color: white;">Objectif formation<span style="color: #00FF41;">:</span> <strong>BUT SD → École d'ingénieur</strong></div>
+                    <div class="typing-text part3" style="color: white;">Projet professionnel<span style="color: #00FF41;">:</span> <strong>Data Analyst / Data Scientist</strong></div>
                 </div>
                 <div class="tech-stack-container">
                     {tech_items}

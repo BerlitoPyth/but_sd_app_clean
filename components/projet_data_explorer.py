@@ -4,10 +4,28 @@ import base64
 from PIL import Image
 
 def display_data_explorer_project():
+    """Affiche la présentation des projets professionnels avec un système d'onglets"""
+    
+    st.markdown("""
+        <h1 style='margin-bottom: 1.5rem;'>💼 Mes Projets Professionnels</h1>
+    """, unsafe_allow_html=True)
+    
+    # Onglets principaux pour les projets
+    project_tabs = st.tabs(["📊 Explorateur de Données", "🌐 InnovaWeb"])
+    
+    # Premier onglet : Explorateur de Données
+    with project_tabs[0]:
+        display_data_explorer()
+    
+    # Deuxième onglet : InnovaWeb
+    with project_tabs[1]:
+        display_innovaweb()
+
+def display_data_explorer():
     """Affiche la présentation du projet Explorateur de Données"""
     
     st.markdown("""
-        <h1 style='margin-bottom: 1.5rem;'>📊 Explorateur de Données</h1>
+        <h2 style='margin-bottom: 1rem;'>📊 Explorateur de Données</h2>
         <p class="subtitle">Une application interactive d'analyse exploratoire de données</p>
     """, unsafe_allow_html=True)
     
@@ -147,4 +165,187 @@ def display_data_explorer_project():
         st.info("### Plotly\nVisualisations interactives avancées")
     with tech_col4:
         st.info("### NumPy\nCalculs numériques")
+
+def display_innovaweb():
+    """Affiche la présentation du projet InnovaWeb - création de sites web"""
+    
+    st.markdown("""
+        <h2 style='margin-bottom: 1rem;'>🌐 InnovaWeb</h2>
+        <p class="subtitle">Création de sites web professionnels pour PME</p>
+    """, unsafe_allow_html=True)
+    
+    # Bouton "Visiter le site"
+    st.markdown("""
+        <div style='text-align: center; margin-bottom: 20px;'>
+            <a href='https://innovaweb.fr' target='_blank'>
+                <button style='
+                    background-color: #4696EC;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    font-weight: bold;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+                    transition: all 0.3s ease;
+                '>
+                    🔗 Visiter le site
+                </button>
+            </a>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Genèse du projet
+    st.header("💡 Genèse du Projet")
+    with st.expander("Découvrir l'origine du projet", expanded=True):
+        # Modification du ratio des colonnes pour doubler la taille de la vidéo
+        col1, col2 = st.columns([1,1.5])
+        with col1:
+            st.markdown("""
+            En échangeant avec des PME, j'ai identifié un besoin : des sites web 
+            professionnels à prix accessibles.
+            
+            J'ai créé InnovaWeb pour offrir aux petites structures des sites
+            optimisés pour convertir les visiteurs en clients.
+                        
+            - 🔍 **Accessibilité** : Prix abordables
+            - 🚀 **Performance** : SEO optimisé
+            """)
+        with col2:
+            try:
+                # Utiliser le fichier vidéo innovaweb_home.mp4
+                video_path = Path(".assets/innovaweb_home.mp4")
+                if video_path.exists():
+                    st.video(str(video_path))
+                else:
+                    st.info("📽️ Vidéo de démonstration non disponible")
+            except Exception as e:
+                st.warning(f"Impossible de charger la vidéo: {e}")
+    
+    # NOUVELLE SECTION: Solutions proposées
+    st.header("💼 Solutions")
+    col1, col2 = st.columns([1, 1.8])  # Ratio modifié pour agrandir l'image
+    
+    with col1:
+        st.markdown("""
+        Dans ce projet entrepreneurial, j'ai développé quatre domaines d'expertise :
+        
+        **🔹 Développement Web**
+        - Sites vitrines et e-commerce sur mesure
+        - Intégration de réservation et paiement
+        
+        **🔹 Responsive Design**
+        - Adaptation à tous les appareils
+        - Expérience utilisateur optimale
+        
+        **🔹 Design UI/UX**
+        - Interfaces modernes et intuitives
+        - Optimisation des taux de conversion
+        
+        **🔹 Performance Web**
+        - Optimisation technique
+        - SEO et accessibilité
+        """)
+    
+    with col2:
+        try:
+            # Afficher une image des solutions
+            image_path = Path(".assets/innovaweb_solutions.jpg")
+            if image_path.exists():
+                img = Image.open(image_path)
+                st.image(img, caption="Expertise technique", use_container_width=True)
+            else:
+                st.info("📸 Image non disponible")
+        except Exception as e:
+            st.warning(f"Impossible de charger l'image: {e}")
+    
+    # NOUVELLE SECTION: Processus
+    st.header("⚙️ Processus")
+    col1, col2 = st.columns([1, 1.8])  # Ratio modifié pour agrandir la vidéo
+    
+    with col1:
+        st.markdown("""
+        **Méthode en 4 étapes :**
+        
+        **1️⃣ Écoute & Découverte**
+        Analyse des besoins et objectifs du client.
+        
+        **2️⃣ Proposition & Maquettes**
+        Élaboration de concepts visuels.
+        
+        **3️⃣ Développement & Tests**
+        Création du site optimisé.
+        
+        **4️⃣ Livraison & Formation**
+        Formation du client à l'utilisation.
+        """)
+    
+    with col2:
+        try:
+            # Afficher une vidéo du processus
+            video_path = Path(".assets/innovaweb_processus.mp4")
+            if video_path.exists():
+                st.video(str(video_path))
+            else:
+                st.info("📽️ Vidéo non disponible")
+        except Exception as e:
+            st.warning(f"Impossible de charger la vidéo: {e}")
+    
+    # NOUVELLE SECTION: Avant-Après
+    st.header("🔄 Transformations")
+    col1, col2 = st.columns([1, 1.8])  # Ratio modifié pour agrandir la vidéo
+    
+    with col1:
+        st.markdown("""
+        Les transformations web améliorent :
+        
+        **🔹 Image de marque**
+        - Design moderne et professionnel
+        - Cohérence visuelle
+        
+        **🔹 Performance**
+        - Chargement rapide
+        - Optimisation pour mobile
+        
+        **🔹 Conversion**
+        - Parcours utilisateur simplifié
+        - Appels à l'action efficaces
+        """)
+    
+    with col2:
+        try:
+            # Afficher une vidéo des transformations
+            video_path = Path(".assets/avant_apres.mp4")
+            if video_path.exists():
+                st.video(str(video_path))
+            else:
+                st.info("📽️ Vidéo non disponible")
+        except Exception as e:
+            st.warning(f"Impossible de charger la vidéo: {e}")
+    
+    # NOUVELLE SECTION: Chatbot Intelligent
+    st.header("🤖 Chatbot IA")
+    col1, col2 = st.columns([1, 1.8])  # Ratio modifié pour agrandir la vidéo
+    
+    with col1:
+        st.markdown("""
+        Le chatbot IA améliore l'expérience sur le site web :
+        
+        - **Assistant 24/7** : Réponses instantanées
+        - **Qualification** : Capture de leads
+        - **Multilangue** : Communication globale
+        - **Évolutif** : Apprentissage continu
+        """)
+    
+    with col2:
+        try:
+            # Afficher une vidéo du chatbot
+            video_path = Path(".assets/innovaweb_chatbot.mp4")
+            if video_path.exists():
+                st.video(str(video_path))
+            else:
+                st.info("📽️ Vidéo non disponible")
+        except Exception as e:
+            st.warning(f"Impossible de charger la vidéo: {e}")
     

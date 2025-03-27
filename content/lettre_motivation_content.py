@@ -34,11 +34,16 @@ def get_lettre_motivation_content():
     Par ailleurs, en parallèle de mes révisions, je me suis formé à Python en passant des formations certifiantes sur Coursera. 
     J'ai aussi créé un concept innovant (voir section "Projet") dans le domaine du gaming. Cette expérience a renforcé ma conviction que l'analyse de données
     est un outil puissant et essentiel pour créer des solutions pertinentes.
-    
-    Lors des journées portes ouvertes, j'ai beaucoup apprécié l'ambiance générale et l'atmosphère propice à l'apprentissage qui régnait dans l'IUT. Aussi, j'ai eu la chance d'échanger avec
-    des enseignants et étudiants, notamment avec Monsieur Mellouk, qui a gentiment pris le temps de répondre à mes questions, sans oublier la qualité de la présentation de Monsieur Poggi.
-    Cette expérience a d'autant plus renforcé mon envie d'intégrer votre établissement, qui correspond pleinement à mes attentes en termes 
-    d'exigence et de quête d'excellence.
+
+    J'ai aussi, pour m'exercer, développé plusieurs projets grâce à claude 3.7 et Cursor. Ma copine étant auditrice financière, j'ai
+    développé un outil capable d'analyser un FEC (Fichier d'Écriture Comptable) et de générer des indicateurs clés, des visualisations et de prédire des potentielles fraudes.
+    En effet j'ai créé un modèle de machine learning capable de détecter des anomalies, pour ce faire il me fallait énormément de fichiers comptables. J'ai donc développé un générateur
+    de FEC qui génère des fichiers comptables de manière aléatoire avec des probabilités de fraude différentes.
+    Enfin, j'ai ouvert ma boite de création de site web pour PME et autoentrepreneurs (innovaweb.fr).
+
+    J'ai eu la chance d'échanger par mail avec Monsieur Hébert qui m'a ensuite proposé de venir "bavarder" dans son bureau, j'ai tout de suite compris que ce n'était surement 
+    pas un professeur comme les autres et ait beaucoup apprécié cette approche humaine. J'ai ensuite découvert "ataraxy", une démarche pédagogique très intéressante, ce qui a conforté mon sentiment.
+    Lors des portes ouvertes, j'ai pu rencontrer Mme Nassiet et discuter avec des élèves. Ces échanges ont encore amplifié mon désir de rejoindre votre établissement.
     
     Pour conclure, ma reconversion professionnelle est le fruit d'une réflexion approfondie et je suis convaincu que mon profil atypique 
     et mon désir d'apprendre seront des atouts précieux pour réussir et contribuer activement à la dynamique de votre formation.

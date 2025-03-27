@@ -144,6 +144,11 @@ def main():
                         margin: 0 0 1rem 0;
                         color: inherit;
                     ">📧berliatadrien@gmail.com</h3>
+                    <h3 style="
+                        font-size: 1.2em;
+                        margin: 0 0 1rem 0;
+                        color: inherit;
+                    ">💻innovaweb.fr</h3>
                 </div>
             """, unsafe_allow_html=True)
             
