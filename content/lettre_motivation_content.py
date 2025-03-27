@@ -74,18 +74,12 @@ def get_note_importante():
             ">
                 <p style="line-height: 1.7; margin-bottom: 16px;">
                 Tout d'abord, merci d'avoir pris le temps de venir découvrir ce projet.
+                Vous trouverez dans la sidebar un menu pour naviguer entre les différentes pages de l'application.
                 </p>  
                 <p style="line-height: 1.7; margin-bottom: 16px;">  
                 Cette application n'a pas été développée pour mettre en avant des compétences en programmation mais pour démarquer une candidature de façon innovante.
-                Des IA génératives ont été utilisées, (Github Copilot, Claude 3.5 Sonnet) et le sont pour ce qu'elles sont et doivent rester : des outils d'aide à la décision et à la conception.
-                </p>
-                <p style="line-height: 1.7; margin: 16;">
-                Nous vivons à une époque où tout semble possible.
-                À partir d'une simple idée et de la détermination, il est désormais possible de concrétiser seul un projet dans son intégralité. 
-                </p>
-                <p style="line-height: 1.7; margin: 0;">
-                Pour moi, rien n'est plus excitant que de repousser mes propres limites et celles de la technologie chaque jour, dans le but de créer et apprendre de nouvelles choses. C'est comme ça qu'est née cette application.
-                </p>
+                Des IA génératives ont été utilisées, (Cursor, Claude 3.7 Sonnet) et le sont pour ce qu'elles sont et doivent rester : des outils d'aide à la décision et à la conception.
+                </p>  
             </div>
         </div>
     """
